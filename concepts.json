@@ -1,0 +1,18 @@
+{
+		 "concept": "ComparisonState",
+		 "children": 
+		 [
+			 {
+				 "concept": "EquivalentRatioState",
+				 "children": 
+				 [
+					 {
+						 "concept": "ExtensionState"				
+					 }
+				 ]
+			 },
+			 {
+				 "concept": "RangeState"
+			 }
+		 ]
+}
