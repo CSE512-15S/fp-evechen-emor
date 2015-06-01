@@ -53,7 +53,12 @@
 
 		   .nodeVisual {
 			 stroke: #fff;
-			 fill: steelblue;
+			 fill: gray;
+			 opacity: 0.2;
+		   }
+		   
+		   .conceptTitle{
+		   	font-weight: bold;
 		   }
 		</style>
 		<link rel="stylesheet" href="d3.slider.css" />  
@@ -68,7 +73,7 @@ Global Variables
 var BY_STUDENT //is this necessary? maybe for the less real time version
 var CONCEPTS_JSON;
 var BY_CONCEPT = {}; //for the more realtime version
-var svg;
+var SVG;
 
 var CLASS_START = null; //slider start. Assuming that all classes happen in the same calendar day
 var CLASS_END = null; //slider end
@@ -80,6 +85,17 @@ var TIME_SCALE;
 
 var width = 2000;
 	height = 1000;
+	
+var lineHeight = 20; //height of each student line	
+
+var CORRECTNESS_REDGREEN = d3.scale.quantize()
+		.domain([0, 1])
+		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b","#a6d96a","#66bd63"]);
+		
+var CORRECTNESS_ORANGEBLUE = d3.scale.quantize()
+		.domain([0, 1])
+		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#e0f3f8","#abd9e9","#74add1"]);
+
 /**********************************************
 Loading/Setup
 ***********************************************/
@@ -88,6 +104,7 @@ d3.json("studentsnell.json", function(data){
 			reshapeStudentData();
             drawTimeline();	
 			loadConcepts();
+			drawStudentList();
 });
 
 function reshapeStudentData(){
@@ -121,7 +138,7 @@ function reshapeStudentData(){
     console.log(CLASS_START + " " + CLASS_END);
 }
 	
-svg = d3.select("body").append("svg")
+SVG = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
 
@@ -145,7 +162,7 @@ function drawTimeline()
 		.on("brush", brushed);
 
 	//Timeline holder
-	var t = svg.append("g")
+	var t = SVG.append("g")
 		.attr("id", "timelineHolder")
 		.attr("transform", "translate(100, 0)");
 	
@@ -197,6 +214,7 @@ function drawTimeline()
         
 	  handle.attr("cx", TIME_SCALE(value)); //location of center of handle
       updateTree();
+      updateStudentList();
 	}
 }
 
@@ -210,8 +228,95 @@ function drawTimeline()
 // 		}
 // }
 // //take all arrays and redraw the concepts
+/********************************
+LIST VIEW - Alphabetical list of students - May be duplicating effort of some things done in other section, but will leave like this for now
+*********************************/
+var STUDENT_LIST_HOLDER;
 
-//Tree things
+function drawStudentList(){
+
+	var margin = {top: 100, right: 0, bottom: 100, left: 0},
+		width =600,
+		height =  1000;
+
+
+		STUDENT_LIST_HOLDER = SVG.append("g")
+			.attr("width", width)
+			.attr("height", height)
+			.append("g")
+			.attr("transform", "translate(700," + margin.top + ")");
+		
+		updateStudentList();
+}
+
+function updateStudentList(){	
+
+	STUDENT_LIST_HOLDER.selectAll(".studentHolder").remove();
+
+		var j = 0;
+        for(student in BY_STUDENT){
+        	var oneStudent = STUDENT_LIST_HOLDER.append("g")
+			   .attr("class", "studentHolder")
+			   .attr("height", lineHeight);
+			
+        	var numShown = 0;
+            var numCorrect = 0;
+            var conceptCount = 0;
+            
+            var bg =  oneStudent.append("rect");
+        	for(concept in BY_STUDENT[student].concepts){
+				for(var x = 0; x < BY_STUDENT[student].concepts[concept].problems.length; x++){
+                    //markers for correct/incorrect problems
+                    oneStudent.append("text")
+                            .attr("x", function(d){  return 100 + lineHeight * (numShown + conceptCount);})
+                            .attr("y", function(d){  return lineHeight*(j+1);})
+                            .text(function(d){
+                                if(new Date(BY_STUDENT[student].concepts[concept].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
+                                	numShown++;
+                                    if(BY_STUDENT[student].concepts[concept].problems[x].correctness == "correct"){
+                                    	numCorrect++;
+                                        return "O";
+                                    }
+                                    else
+                                        return "X";
+                                }
+                                else{
+                                    this.remove();
+                                    return "";
+                                }
+                            });          
+                }
+                if(BY_STUDENT[student].concepts[concept].problems.length > 0)      
+                	conceptCount++;    
+        	}
+
+		
+		oneStudent.append("text")
+		   .attr("x", function(d){  return 0;})
+		   .attr("y", function(d){  return lineHeight*(j+1);})
+		   .text(function(){return BY_STUDENT[student].name;}); 
+		   
+		bg.attr("width", function(){
+				return 100 + lineHeight * (numShown + conceptCount);
+			})
+			.attr("height", "20px")
+			.attr("x", 0)
+			.attr("y", function(d){  return  lineHeight*(j)})
+			.attr("class", "student_bg")
+			.attr("fill", function(d){
+				if(isNaN(numCorrect/numShown))
+					return "grey";
+				else
+					return CORRECTNESS_REDGREEN(numCorrect/numShown);
+		   	});
+		j++;    
+                    
+        };
+}
+/********************************
+TREE VIEW
+*********************************/
+
 function loadConcepts(){
 d3.json("concepts.json", function(data){
 			CONCEPTS_JSON = data;
@@ -231,10 +336,9 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 
 	var margin = {top: 100, right: 0, bottom: 100, left: 0},
 		width =600,
-		height =  600;
+		height =  1000;
 
-	TREE_HOLDER = d3.select("svg")
-			.append("svg")
+	TREE_HOLDER = SVG.append("g")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
 			.append("g")
@@ -251,25 +355,16 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
     updateTree();
 	
 }
-
-var CORRECTNESS_REDGREEN = d3.scale.quantize()
-		.domain([0, 1])
-		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b","#a6d96a","#66bd63"]);
-		
-var CORRECTNESS_ORANGEBLUE = d3.scale.quantize()
-		.domain([0, 1])
-		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#e0f3f8","#abd9e9","#74add1"]);
-
 function updateTree(){
     //which students are at which node?
     
     // Create the link lines.
-    TREE_HOLDER.selectAll(".link")
+    /*TREE_HOLDER.selectAll(".link")
         .data(TREE_LINKS)
 		.enter()
 		.append("path")
         .attr("class", "link")
-        .attr("d", connector);
+        .attr("d", connector);*/
 	
 	//TODO separate this so that the text can get appended too...
 	var nodes = TREE_HOLDER.selectAll(".node")
@@ -321,7 +416,7 @@ function updateTree(){
                         })
    						.attr("height", "20px")
                         .attr("x", function(d){  return 100;})
-                        .attr("y", function(d){  return prevY + (20*j);})
+                        .attr("y", function(d){  return prevY + (lineHeight*j);})
                     	.attr("class", "student_bg")
 					    .attr("fill", function(d){
 						return CORRECTNESS_REDGREEN(numCorrect/numShown);
@@ -332,8 +427,8 @@ function updateTree(){
                     
                     //markers for correct/incorrect problems
                     markers.enter().append("text")
-                            .attr("x", function(d, i){  return 200 + (20 * i);})
-                            .attr("y", function(d){  return prevY + 20 + (20*j);})
+                            .attr("x", function(d, i){  return 200 + (lineHeight * i);})
+                            .attr("y", function(d){  return prevY + (lineHeight*(j+1));})
                             .text(function(d){
                                 if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
                                     if(d.correctness == "correct")
@@ -351,7 +446,7 @@ function updateTree(){
                     //student name
                      grp.append("text")
                             .attr("x", function(d){  return 100;})
-                            .attr("y", function(d){  return prevY + 20 + (20*j);})
+                            .attr("y", function(d){  return prevY + (lineHeight*(j+1));})
                             .text(function(){return BY_CONCEPT[d.concept][student].name;});                   
                     j++;
                  }
