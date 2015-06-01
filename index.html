@@ -83,7 +83,7 @@ var width = 2000;
 /**********************************************
 Loading/Setup
 ***********************************************/
-d3.json("students.json", function(data){
+d3.json("studentsnell.json", function(data){
 			BY_STUDENT = data; 
 			reshapeStudentData();
             drawTimeline();	
@@ -251,6 +251,14 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 	
 }
 
+var CORRECTNESS_REDGREEN = d3.scale.quantize()
+		.domain([0, 1])
+		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b","#a6d96a","#66bd63"]);
+		
+var CORRECTNESS_ORANGEBLUE = d3.scale.quantize()
+		.domain([0, 1])
+		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#e0f3f8","#abd9e9","#74add1"]);
+
 function updateTree(){
     //which students are at which node?
     
@@ -278,13 +286,38 @@ function updateTree(){
         nodes.each(function(d, i){
             var j = 0;
             d3.select(this).selectAll(".studentHolder").remove(); //probably unnecessary.. dont want to redraw all students each update
+            d3.select(this).selectAll(".student_bg").remove(); //probably unnecessary?
+            
+            
             for(student in BY_CONCEPT[d.concept]){
                 if( BRUSH.extent()[0] > BY_CONCEPT[d.concept][student].start &&
                     BRUSH.extent()[0] < BY_CONCEPT[d.concept][student].end){
                     var grp = d3.select(this).append("g")
                                 .attr("class", "studentHolder");
-                     
-
+                    
+                    //calculating bg width and color
+                    var numShown = 0;
+                    var numCorrect = 0;
+                    for(var x = 0; x < BY_CONCEPT[d.concept][student].problems.length; x++){
+                        if(new Date(BY_CONCEPT[d.concept][student].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
+                        	numShown++;
+                        	if(BY_CONCEPT[d.concept][student].problems[x].correctness == "correct")
+                        		numCorrect++;
+                        }
+                    }
+                    
+                    grp.append("rect")
+                        .attr("width", function(){
+                        	return 100 + 20*numShown + "px";
+                        })
+   						.attr("height", "20px")
+                        .attr("x", function(d){  return 100;})
+                        .attr("y", function(d){  return 150*i + (20*j);})
+                    	.attr("class", "student_bg")
+					    .attr("fill", function(d){
+						return CORRECTNESS_REDGREEN(numCorrect/numShown);
+					});
+					
                     var markers = grp.selectAll("text")
                             .data(BY_CONCEPT[d.concept][student].problems);
                     
