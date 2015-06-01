@@ -247,6 +247,7 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
         TREE_NODES = TREE_MAIN.nodes(CONCEPTS_JSON),
         TREE_LINKS = TREE_MAIN.links(TREE_NODES);
     
+    console.log(BRUSH.extent()[0]);
     updateTree();
 	
 }
@@ -274,20 +275,28 @@ function updateTree(){
 	var nodes = TREE_HOLDER.selectAll(".node")
         .data(TREE_NODES);
         
-		nodes.enter().append("g")
+		nodes.enter().append("g") //height and y set later
 			.attr("class", "node")
             .append("rect")
             .attr("class", "nodeVisual")
 			.attr("width", nodeWidth)
-			.attr("height", nodeHeight)
 			.attr("x", function(d){  return 100;})
-			.attr("y", function(d, i){  return 150*i;})
 
+		var prevY = 0;
         nodes.each(function(d, i){
             var j = 0;
-            d3.select(this).selectAll(".studentHolder").remove(); //probably unnecessary.. dont want to redraw all students each update
-            d3.select(this).selectAll(".student_bg").remove(); //probably unnecessary?
             
+            //removing old elements - necessary?
+            d3.select(this).selectAll(".studentHolder").remove(); 
+            d3.select(this).selectAll(".student_bg").remove();
+            d3.select(this).selectAll(".conceptTitle").remove();
+                    
+        //name of state
+        d3.select(this).append("text")
+        	.attr("class", "conceptTitle")
+        	.attr("x", function(d){  return 100;})
+		  	.attr("y", function(d, i){  return prevY;})
+        	.text(function(d){return d.concept;});
             
             for(student in BY_CONCEPT[d.concept]){
                 if( BRUSH.extent()[0] > BY_CONCEPT[d.concept][student].start &&
@@ -312,7 +321,7 @@ function updateTree(){
                         })
    						.attr("height", "20px")
                         .attr("x", function(d){  return 100;})
-                        .attr("y", function(d){  return 150*i + (20*j);})
+                        .attr("y", function(d){  return prevY + (20*j);})
                     	.attr("class", "student_bg")
 					    .attr("fill", function(d){
 						return CORRECTNESS_REDGREEN(numCorrect/numShown);
@@ -324,7 +333,7 @@ function updateTree(){
                     //markers for correct/incorrect problems
                     markers.enter().append("text")
                             .attr("x", function(d, i){  return 200 + (20 * i);})
-                            .attr("y", function(d){  return 150*i + 20 + (20*j);})
+                            .attr("y", function(d){  return prevY + 20 + (20*j);})
                             .text(function(d){
                                 if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
                                     if(d.correctness == "correct")
@@ -342,18 +351,19 @@ function updateTree(){
                     //student name
                      grp.append("text")
                             .attr("x", function(d){  return 100;})
-                            .attr("y", function(d){  return 150*i + 20 + (20*j);})
+                            .attr("y", function(d){  return prevY + 20 + (20*j);})
                             .text(function(){return BY_CONCEPT[d.concept][student].name;});                   
                     j++;
                  }
             }
+            
+            //position and size containing rect appropriately
+            d3.select(this).select(".nodeVisual")
+            	.attr("height", 20*j)
+            	.attr("y", function(d, i){  return prevY;});
+            prevY = prevY + 20*(j) + 50;           
+            
         });
-        
-        //name of state
-        nodes.enter().append("text")
-        	.attr("x", function(d){  return 100;})
-		  	.attr("y", function(d, i){  return 150*i;})
-        	.text(function(d){return d.concept;});
         
         
         nodes.exit().remove();
