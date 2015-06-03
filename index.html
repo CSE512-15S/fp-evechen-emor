@@ -60,6 +60,24 @@
 		   .conceptTitle{
 		   	font-weight: bold;
 		   }
+		   
+		   .student_name, .marker, .overlay{
+		 	  pointer-events:none
+		   }
+		   
+		   .student_bg .unselected{
+
+		   }
+		   
+		   .student_bg .selected{
+
+		   }
+		   
+		   .overlay{
+		   		fill: gray;
+		   		opacity: 0.3;
+		   }
+		   
 		</style>
 		<link rel="stylesheet" href="d3.slider.css" />  
 		<script src="d3.min.js"></script>
@@ -249,29 +267,40 @@ function drawStudentList(){
 		updateStudentList();
 }
 
+var CURRENT_SELECTION = null; //currently selected student
+
 function updateStudentList(){	
 
 	STUDENT_LIST_HOLDER.selectAll(".studentHolder").remove();
 
 		var j = 0;
-        for(student in BY_STUDENT){
+        for(var student in BY_STUDENT){
         	var oneStudent = STUDENT_LIST_HOLDER.append("g")
+        	   .data(student) 
 			   .attr("class", "studentHolder")
 			   .attr("height", lineHeight);
 			
         	var numShown = 0;
             var numCorrect = 0;
             var conceptCount = 0;
+            var atLeastOne = false;
             
             var bg =  oneStudent.append("rect");
-        	for(concept in BY_STUDENT[student].concepts){
+            		  
+            var overlay = oneStudent.append("rect")
+            		  .attr("class", "overlay")
+            		  .style("visibility", "hidden");
+            		  		  
+        	for(var concept in BY_STUDENT[student].concepts){
 				for(var x = 0; x < BY_STUDENT[student].concepts[concept].problems.length; x++){
                     //markers for correct/incorrect problems
                     oneStudent.append("text")
                             .attr("x", function(d){  return 100 + lineHeight * (numShown + conceptCount);})
                             .attr("y", function(d){  return lineHeight*(j+1);})
+                            .attr("class", "marker")
                             .text(function(d){
                                 if(new Date(BY_STUDENT[student].concepts[concept].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
+                                	atLeastOne = true;
                                 	numShown++;
                                     if(BY_STUDENT[student].concepts[concept].problems[x].correctness == "correct"){
                                     	numCorrect++;
@@ -286,19 +315,23 @@ function updateStudentList(){
                                 }
                             });          
                 }
-                if(BY_STUDENT[student].concepts[concept].problems.length > 0)      
-                	conceptCount++;    
+                if(BY_STUDENT[student].concepts[concept].problems.length > 0 && atLeastOne){ //how to only show concepts actually shown??
+                	conceptCount++;
+                	!atLeastOne;
+                }    
         	}
 
 		
 		oneStudent.append("text")
 		   .attr("x", function(d){  return 0;})
+		   .attr("class", "student_name")
 		   .attr("y", function(d){  return lineHeight*(j+1);})
 		   .text(function(){return BY_STUDENT[student].name;}); 
 		   
 		bg.attr("width", function(){
 				return 100 + lineHeight * (numShown + conceptCount);
 			})
+			.data([{elem: bg, data: BY_STUDENT[student]}])
 			.attr("height", "20px")
 			.attr("x", 0)
 			.attr("y", function(d){  return  lineHeight*(j)})
@@ -308,10 +341,43 @@ function updateStudentList(){
 					return "grey";
 				else
 					return CORRECTNESS_REDGREEN(numCorrect/numShown);
+		   	})
+		   	.on("click", function(d){ 
+		   		studentClicked(d);
 		   	});
+		   	
+		   overlay.attr("width", bg.attr("width"))
+		   		  .attr("height", 20)
+		   		  .attr("x", 0)
+		   		  .attr("y", bg.attr("y"));
 		j++;    
                     
         };
+}
+
+function studentClicked(d){
+	console.log("click!");
+	console.log(CURRENT_SELECTION);
+	if(CURRENT_SELECTION == null){ //nothing currently selected
+		CURRENT_SELECTION = d.elem.node().parentNode; //the student holder group
+		
+		//hide all
+		STUDENT_LIST_HOLDER.selectAll(".student_bg").attr("class", "student_bg unselected").style("visibility", "hidden");
+		STUDENT_LIST_HOLDER.selectAll("text").style("opacity", 0.3);
+		STUDENT_LIST_HOLDER.selectAll(".overlay").style("visibility", "visible"); //TODO each node must have an overlay with transparency for whited/grayed out effect
+		
+		//show selected
+		d3.select(CURRENT_SELECTION).select(".student_bg").attr("class", "student_bg selected").style("visibility", "visible");
+		d3.select(CURRENT_SELECTION).selectAll("text").style("opacity", 1);
+		d3.select(CURRENT_SELECTION).select(".overlay").style("visibility", "hidden");	
+	}
+	else { //deselect everything if something is selected, unless you tapped on the current selection
+		STUDENT_LIST_HOLDER.selectAll(".student_bg").attr("class", "student_bg").style("visibility", "visible");
+		STUDENT_LIST_HOLDER.selectAll("text").style("opacity", 1);
+		STUDENT_LIST_HOLDER.selectAll(".overlay").style("visibility", "hidden");
+		CURRENT_SELECTION = null;
+	}
+	console.log(CURRENT_SELECTION);
 }
 /********************************
 TREE VIEW
@@ -427,6 +493,7 @@ function updateTree(){
                     
                     //markers for correct/incorrect problems
                     markers.enter().append("text")
+                    		.attr("class", "marker")
                             .attr("x", function(d, i){  return 200 + (lineHeight * i);})
                             .attr("y", function(d){  return prevY + (lineHeight*(j+1));})
                             .text(function(d){
@@ -445,6 +512,7 @@ function updateTree(){
                     
                     //student name
                      grp.append("text")
+                     		.attr("class", "student_name")
                             .attr("x", function(d){  return 100;})
                             .attr("y", function(d){  return prevY + (lineHeight*(j+1));})
                             .text(function(){return BY_CONCEPT[d.concept][student].name;});                   
