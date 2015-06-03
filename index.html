@@ -61,7 +61,7 @@
 		   	font-weight: bold;
 		   }
 		   
-		   .student_name, .marker, .overlay{
+		   .student_name, .marker, .overlay, .info_overlay{
 		 	  pointer-events:none
 		   }
 		   
@@ -76,6 +76,9 @@
 		   .overlay{
 		   		fill: gray;
 		   		opacity: 0.3;
+		   }
+		   
+		   .info_overlay{
 		   }
 		   
 		</style>
@@ -105,6 +108,7 @@ var width = 2000;
 	height = 1000;
 	
 var lineHeight = 20; //height of each student line	
+var markerWidth = 10; //width of each check/cross
 
 var CORRECTNESS_REDGREEN = d3.scale.quantize()
 		.domain([0, 1])
@@ -274,7 +278,7 @@ function updateStudentList(){
 	STUDENT_LIST_HOLDER.selectAll(".studentHolder").remove();
 
 		var j = 0;
-        for(var student in BY_STUDENT){
+        Object.keys(BY_STUDENT).forEach(function(student){
         	var oneStudent = STUDENT_LIST_HOLDER.append("g")
         	   .data(student) 
 			   .attr("class", "studentHolder")
@@ -282,28 +286,34 @@ function updateStudentList(){
 			
         	var numShown = 0;
             var numCorrect = 0;
+            
             var conceptCount = 0;
-            var atLeastOne = false;
             
             var bg =  oneStudent.append("rect");
             		  
             var overlay = oneStudent.append("rect")
             		  .attr("class", "overlay")
             		  .style("visibility", "hidden");
-            		  		  
-        	for(var concept in BY_STUDENT[student].concepts){
+              		  
+        	 Object.keys(BY_STUDENT[student].concepts).forEach(function(concept){
+        	//for(var concept in BY_STUDENT[student].concepts){
+        		var numShownThisRound = 0;
+           		 var numCorrectThisRound = 0;
+        	
 				for(var x = 0; x < BY_STUDENT[student].concepts[concept].problems.length; x++){
                     //markers for correct/incorrect problems
                     oneStudent.append("text")
-                            .attr("x", function(d){  return 100 + lineHeight * (numShown + conceptCount);})
+                            .attr("x", function(d){  return 100 + markerWidth * (numShown + conceptCount);})
                             .attr("y", function(d){  return lineHeight*(j+1);})
+                            .attr("width", markerWidth)
                             .attr("class", "marker")
                             .text(function(d){
                                 if(new Date(BY_STUDENT[student].concepts[concept].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
-                                	atLeastOne = true;
                                 	numShown++;
+                                	numShownThisRound++;
                                     if(BY_STUDENT[student].concepts[concept].problems[x].correctness == "correct"){
                                     	numCorrect++;
+                                    	numCorrectThisRound++;
                                         return "O";
                                     }
                                     else
@@ -315,11 +325,26 @@ function updateStudentList(){
                                 }
                             });          
                 }
-                if(BY_STUDENT[student].concepts[concept].problems.length > 0 && atLeastOne){ //how to only show concepts actually shown??
-                	conceptCount++;
-                	!atLeastOne;
-                }    
-        	}
+                if(BY_STUDENT[student].concepts[concept].problems.length > 0 && numShownThisRound > 0){ //how to only show concepts actually shown??
+                //bars for correctness per section - maybe creating it here is overkill and should be done upon clicking the student?
+                oneStudent.append("rect")
+                	.attr("class", "info_overlay")
+                	.attr("width", function(){
+						return markerWidth * (numShownThisRound);
+					})
+					.attr("height", "5px")
+					.attr("x", 100 + markerWidth * (conceptCount + numShown - numShownThisRound))
+					.attr("y", function(d){  return  lineHeight*(j) - 5})
+					.style("visibility", "hidden")
+					.style("fill", function(d){
+						if(isNaN(numCorrectThisRound/numShownThisRound))
+							return "grey";
+						else
+							return CORRECTNESS_REDGREEN(numCorrectThisRound/numShownThisRound);
+		   			})   
+		   			conceptCount++;
+		   		}
+        	});
 
 		
 		oneStudent.append("text")
@@ -329,21 +354,21 @@ function updateStudentList(){
 		   .text(function(){return BY_STUDENT[student].name;}); 
 		   
 		bg.attr("width", function(){
-				return 100 + lineHeight * (numShown + conceptCount);
+				return 100 + markerWidth * (numShown + conceptCount);
 			})
-			.data([{elem: bg, data: BY_STUDENT[student]}])
+			//.data(function(){return [{elem: bg, data: BY_STUDENT[student]}]})
 			.attr("height", "20px")
 			.attr("x", 0)
-			.attr("y", function(d){  return  lineHeight*(j)})
+			.attr("y", function(){  return  lineHeight*(j)})
 			.attr("class", "student_bg")
-			.attr("fill", function(d){
+			.style("fill", function(){
 				if(isNaN(numCorrect/numShown))
 					return "grey";
 				else
 					return CORRECTNESS_REDGREEN(numCorrect/numShown);
 		   	})
-		   	.on("click", function(d){ 
-		   		studentClicked(d);
+		   	.on("click", function(){ 
+		   		studentClicked(this);
 		   	});
 		   	
 		   overlay.attr("width", bg.attr("width"))
@@ -352,14 +377,13 @@ function updateStudentList(){
 		   		  .attr("y", bg.attr("y"));
 		j++;    
                     
-        };
+        });
 }
 
-function studentClicked(d){
-	console.log("click!");
-	console.log(CURRENT_SELECTION);
+function studentClicked(source){
+	//console.log("click!");
 	if(CURRENT_SELECTION == null){ //nothing currently selected
-		CURRENT_SELECTION = d.elem.node().parentNode; //the student holder group
+		CURRENT_SELECTION = source.parentNode; //the student holder group
 		
 		//hide all
 		STUDENT_LIST_HOLDER.selectAll(".student_bg").attr("class", "student_bg unselected").style("visibility", "hidden");
@@ -370,14 +394,15 @@ function studentClicked(d){
 		d3.select(CURRENT_SELECTION).select(".student_bg").attr("class", "student_bg selected").style("visibility", "visible");
 		d3.select(CURRENT_SELECTION).selectAll("text").style("opacity", 1);
 		d3.select(CURRENT_SELECTION).select(".overlay").style("visibility", "hidden");	
+		d3.select(CURRENT_SELECTION).selectAll(".info_overlay").style("visibility", "visible");	
 	}
 	else { //deselect everything if something is selected, unless you tapped on the current selection
 		STUDENT_LIST_HOLDER.selectAll(".student_bg").attr("class", "student_bg").style("visibility", "visible");
 		STUDENT_LIST_HOLDER.selectAll("text").style("opacity", 1);
 		STUDENT_LIST_HOLDER.selectAll(".overlay").style("visibility", "hidden");
+		STUDENT_LIST_HOLDER.selectAll(".info_overlay").style("visibility", "hidden");	
 		CURRENT_SELECTION = null;
 	}
-	console.log(CURRENT_SELECTION);
 }
 /********************************
 TREE VIEW
@@ -478,7 +503,7 @@ function updateTree(){
                     
                     grp.append("rect")
                         .attr("width", function(){
-                        	return 100 + 20*numShown + "px";
+                        	return 100 + markerWidth*numShown + "px";
                         })
    						.attr("height", "20px")
                         .attr("x", function(d){  return 100;})
@@ -494,7 +519,8 @@ function updateTree(){
                     //markers for correct/incorrect problems
                     markers.enter().append("text")
                     		.attr("class", "marker")
-                            .attr("x", function(d, i){  return 200 + (lineHeight * i);})
+                    		.attr("width", markerWidth)
+                            .attr("x", function(d, i){  return 200 + (markerWidth * i);})
                             .attr("y", function(d){  return prevY + (lineHeight*(j+1));})
                             .text(function(d){
                                 if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
