@@ -102,7 +102,7 @@ Global Variables
 ***********************************************/
 //JSON objects
 var BY_STUDENT //is this necessary? maybe for the less real time version
-var CONCEPTS_JSON;
+var CONCEPTS = [];
 var BY_CONCEPT = {}; //for the more realtime version
 var SVG;
 
@@ -128,15 +128,17 @@ var CORRECTNESS_ORANGEBLUE = d3.scale.quantize()
 		.domain([0, 1])
 		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#e0f3f8","#abd9e9","#74add1"]);
 
+var checkmark = 'M 197.67968,534.31563 C 197.40468,534.31208 196.21788,532.53719 195.04234,530.37143 L 192.905,526.43368 L 193.45901,525.87968 C 193.76371,525.57497 194.58269,525.32567 195.27896,525.32567 L 196.5449,525.32567 L 197.18129,527.33076 L 197.81768,529.33584 L 202.88215,523.79451 C 205.66761,520.74678 208.88522,517.75085 210.03239,517.13691 L 212.11815,516.02064 L 207.90871,520.80282 C 205.59351,523.43302 202.45735,527.55085 200.93947,529.95355 C 199.42159,532.35625 197.95468,534.31919 197.67968,534.31563 z'
 /**********************************************
 Loading/Setup
 ***********************************************/
-d3.json("studentsnell.json", function(data){
+d3.json("data_files/short_sessions/students_4.json", function(data){
 			BY_STUDENT = data; 
 			reshapeStudentData();
             drawTimeline();	
-			loadConcepts();
+			//loadConcepts();
 			drawStudentList();
+			drawTree();
 });
 
 function reshapeStudentData(){
@@ -158,8 +160,10 @@ function reshapeStudentData(){
                 CLASS_END = CLASS_END < end ? end : CLASS_END;
              }
               
-              if(!BY_CONCEPT[group])
+              if(!BY_CONCEPT[group]){
                           BY_CONCEPT[group] = {};
+                          CONCEPTS.push(group);
+            	}
             BY_CONCEPT[group][student] = {name: name};
             BY_CONCEPT[group][student]["start"] = start;
             BY_CONCEPT[group][student]["end"] = end;
@@ -268,15 +272,15 @@ var STUDENT_LIST_HOLDER;
 function drawStudentList(){
 
 	var margin = {top: 100, right: 0, bottom: 100, left: 0},
-		width =600,
-		height =  1000;
+		width = 600,
+		height =  2000;
 
 
 		STUDENT_LIST_HOLDER = SVG.append("g")
 			.attr("width", width)
 			.attr("height", height)
 			.append("g")
-			.attr("transform", "translate(700," + margin.top + ")");
+			.attr("transform", "translate(700," + 2*margin.top + ")");
 		
 		updateStudentList();
 }
@@ -356,7 +360,7 @@ function updateStudentList(){
 		   		//similarly, label for the concept
 		   		oneStudent.append("text")
 		   			.attr("class", "concept_name info_overlay")
-		   			.attr("transform", "translate(" + (100 + (markerWidth * (conceptCount + numShown - 0.75 * numShownThisRound))) + "," + (lineHeight*(j) - 6) + "), rotate(-60)")
+		   			.attr("transform", "translate(" + (100 + (markerWidth * (conceptCount + numShown - 0.5 * numShownThisRound))) + "," + (lineHeight*(j) - 6) + "), rotate(-60)")
 		   			.style("visibility", "hidden")
 		   			.text(concept);
 		   		 
@@ -426,16 +430,16 @@ function studentClicked(source){
 	}
 }
 /********************************
-TREE VIEW
+"TREE" VIEW
 *********************************/
 
-function loadConcepts(){
+/*function loadConcepts(){
 d3.json("concepts.json", function(data){
 			CONCEPTS_JSON = data;
             drawTree();
 	});
 }
-
+*/
 var nodeWidth = 200,
 	nodeHeight = 100;
 
@@ -454,16 +458,16 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
 			.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
 
-	var size= [width, height];
+	/*var size= [width, height];
 
     // Compute the layout.
     TREE_MAIN = d3.layout.tree().size(size),
         TREE_NODES = TREE_MAIN.nodes(CONCEPTS_JSON),
         TREE_LINKS = TREE_MAIN.links(TREE_NODES);
     
-    console.log(BRUSH.extent()[0]);
+    console.log(BRUSH.extent()[0]);*/
     updateTree();
 	
 }
@@ -478,10 +482,11 @@ function updateTree(){
         .attr("class", "link")
         .attr("d", connector);*/
 	
+	
 	//TODO separate this so that the text can get appended too...
 	var nodes = TREE_HOLDER.selectAll(".node")
-        .data(TREE_NODES);
-        
+        .data(CONCEPTS);
+
 		nodes.enter().append("g") //height and y set later
 			.attr("class", "node")
             .append("rect")
@@ -491,6 +496,7 @@ function updateTree(){
 
 		var prevY = 0;
         nodes.each(function(d, i){
+        
             var j = 0;
             
             //removing old elements - necessary?
@@ -501,23 +507,23 @@ function updateTree(){
         //name of state
         d3.select(this).append("text")
         	.attr("class", "conceptTitle")
-        	.attr("x", function(d){  return 100;})
-		  	.attr("y", function(d, i){  return prevY;})
-        	.text(function(d){return d.concept;});
+        	.attr("x", function(){  return 100;})
+		  	.attr("y", function(){  return prevY;})
+        	.text(function(d){return d;});
             
-            for(student in BY_CONCEPT[d.concept]){
-                if( BRUSH.extent()[0] > BY_CONCEPT[d.concept][student].start &&
-                    BRUSH.extent()[0] < BY_CONCEPT[d.concept][student].end){
+            for(student in BY_CONCEPT[d]){
+                if( BRUSH.extent()[0] > BY_CONCEPT[d][student].start &&
+                    BRUSH.extent()[0] < BY_CONCEPT[d][student].end){
                     var grp = d3.select(this).append("g")
                                 .attr("class", "studentHolder");
                     
                     //calculating bg width and color
                     var numShown = 0;
                     var numCorrect = 0;
-                    for(var x = 0; x < BY_CONCEPT[d.concept][student].problems.length; x++){
-                        if(new Date(BY_CONCEPT[d.concept][student].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
+                    for(var x = 0; x < BY_CONCEPT[d][student].problems.length; x++){
+                        if(new Date(BY_CONCEPT[d][student].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
                         	numShown++;
-                        	if(BY_CONCEPT[d.concept][student].problems[x].correctness == "correct")
+                        	if(BY_CONCEPT[d][student].problems[x].correctness == "correct")
                         		numCorrect++;
                         }
                     }
@@ -527,22 +533,22 @@ function updateTree(){
                         	return 100 + markerWidth*numShown + "px";
                         })
    						.attr("height", "20px")
-                        .attr("x", function(d){  return 100;})
-                        .attr("y", function(d){  return prevY + (lineHeight*j);})
+                        .attr("x", function(){  return 100;})
+                        .attr("y", function(){  return prevY + (lineHeight*j);})
                     	.attr("class", "student_bg")
-					    .attr("fill", function(d){
+					    .attr("fill", function(){
 						return CORRECTNESS_REDGREEN(numCorrect/numShown);
 					});
 					
                     var markers = grp.selectAll("text")
-                            .data(BY_CONCEPT[d.concept][student].problems);
+                            .data(BY_CONCEPT[d][student].problems);
                     
                     //markers for correct/incorrect problems
                     markers.enter().append("text")
                     		.attr("class", "marker")
                     		.attr("width", markerWidth)
                             .attr("x", function(d, i){  return 200 + (markerWidth * i);})
-                            .attr("y", function(d){  return prevY + (lineHeight*(j+1));})
+                            .attr("y", function(){  return prevY + (lineHeight*(j+1));})
                             .text(function(d){
                                 if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
                                     if(d.correctness == "correct")
@@ -560,9 +566,9 @@ function updateTree(){
                     //student name
                      grp.append("text")
                      		.attr("class", "student_name")
-                            .attr("x", function(d){  return 100;})
-                            .attr("y", function(d){  return prevY + (lineHeight*(j+1));})
-                            .text(function(){return BY_CONCEPT[d.concept][student].name;});                   
+                            .attr("x", function(){  return 100;})
+                            .attr("y", function(){  return prevY + (lineHeight*(j+1));})
+                            .text(function(){return BY_CONCEPT[d][student].name;});                   
                     j++;
                  }
             }
