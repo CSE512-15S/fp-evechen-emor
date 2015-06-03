@@ -52,9 +52,10 @@
 		   }
 
 		   .nodeVisual {
-			 stroke: #fff;
+		   	fill: none;
+			 /*stroke: #fff;
 			 fill: gray;
-			 opacity: 0.2;
+			 opacity: 0.2;*/
 		   }
 		   
 		   .conceptTitle{
@@ -114,8 +115,8 @@ var SLIDER;
 var BRUSH;
 var TIME_SCALE;
 
-var width = 2000;
-	height = 1000;
+var width = 1500;
+	height = 2000;
 	
 var lineHeight = 20; //height of each student line	
 var markerWidth = 10; //width of each check/cross
@@ -128,7 +129,7 @@ var CORRECTNESS_ORANGEBLUE = d3.scale.quantize()
 		.domain([0, 1])
 		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#e0f3f8","#abd9e9","#74add1"]);
 
-var checkmark = 'M 197.67968,534.31563 C 197.40468,534.31208 196.21788,532.53719 195.04234,530.37143 L 192.905,526.43368 L 193.45901,525.87968 C 193.76371,525.57497 194.58269,525.32567 195.27896,525.32567 L 196.5449,525.32567 L 197.18129,527.33076 L 197.81768,529.33584 L 202.88215,523.79451 C 205.66761,520.74678 208.88522,517.75085 210.03239,517.13691 L 212.11815,516.02064 L 207.90871,520.80282 C 205.59351,523.43302 202.45735,527.55085 200.93947,529.95355 C 199.42159,532.35625 197.95468,534.31919 197.67968,534.31563 z'
+var check_mark = 'M 197.67968,534.31563 C 197.40468,534.31208 196.21788,532.53719 195.04234,530.37143 L 192.905,526.43368 L 193.45901,525.87968 C 193.76371,525.57497 194.58269,525.32567 195.27896,525.32567 L 196.5449,525.32567 L 197.18129,527.33076 L 197.81768,529.33584 L 202.88215,523.79451 C 205.66761,520.74678 208.88522,517.75085 210.03239,517.13691 L 212.11815,516.02064 L 207.90871,520.80282 C 205.59351,523.43302 202.45735,527.55085 200.93947,529.95355 C 199.42159,532.35625 197.95468,534.31919 197.67968,534.31563 z'
 /**********************************************
 Loading/Setup
 ***********************************************/
@@ -296,7 +297,8 @@ function updateStudentList(){
         	var oneStudent = STUDENT_LIST_HOLDER.append("g")
         	   .data(student) 
 			   .attr("class", "studentHolder")
-			   .attr("height", lineHeight);
+			   .attr("height", lineHeight)
+			   .attr("transform", "translate(0," + j * 3 + ")");
 			
         	var numShown = 0;
             var numCorrect = 0;
@@ -456,7 +458,7 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 
 	TREE_HOLDER = SVG.append("g")
 			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom)
+			.attr("height", 2000)
 			.append("g")
 			.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
 
@@ -515,7 +517,8 @@ function updateTree(){
                 if( BRUSH.extent()[0] > BY_CONCEPT[d][student].start &&
                     BRUSH.extent()[0] < BY_CONCEPT[d][student].end){
                     var grp = d3.select(this).append("g")
-                                .attr("class", "studentHolder");
+                                .attr("class", "studentHolder")
+                                .attr("transform", "translate(0," + j * 3 + ")");
                     
                     //calculating bg width and color
                     var numShown = 0;
