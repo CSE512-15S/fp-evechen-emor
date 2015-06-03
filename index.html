@@ -61,7 +61,7 @@
 		   	font-weight: bold;
 		   }
 		   
-		   .student_name, .marker, .overlay, .info_overlay{
+		   .student_name, .marker, .info_overlay{
 		 	  pointer-events:none
 		   }
 		   
@@ -75,12 +75,22 @@
 		   
 		   .overlay{
 		   		fill: gray;
-		   		opacity: 0.3;
+		   		opacity: 0.2;
 		   }
 		   
-		   .info_overlay{
+		   rect.info_overlay {
+		   		stroke-width: 1;
+		   		stroke: black;
 		   }
 		   
+		   text.concept_name{
+		   		font-size: 8;
+		   }
+		   
+		   text{
+		   		font-family: Verdana, Sans-Serif;
+		   		-webkit-user-select: none;
+		   }
 		</style>
 		<link rel="stylesheet" href="d3.slider.css" />  
 		<script src="d3.min.js"></script>
@@ -326,6 +336,7 @@ function updateStudentList(){
                             });          
                 }
                 if(BY_STUDENT[student].concepts[concept].problems.length > 0 && numShownThisRound > 0){ //how to only show concepts actually shown??
+                
                 //bars for correctness per section - maybe creating it here is overkill and should be done upon clicking the student?
                 oneStudent.append("rect")
                 	.attr("class", "info_overlay")
@@ -334,14 +345,21 @@ function updateStudentList(){
 					})
 					.attr("height", "5px")
 					.attr("x", 100 + markerWidth * (conceptCount + numShown - numShownThisRound))
-					.attr("y", function(d){  return  lineHeight*(j) - 5})
+					.attr("y", function(d){  return  lineHeight*(j) - 6})
 					.style("visibility", "hidden")
 					.style("fill", function(d){
 						if(isNaN(numCorrectThisRound/numShownThisRound))
 							return "grey";
 						else
 							return CORRECTNESS_REDGREEN(numCorrectThisRound/numShownThisRound);
-		   			})   
+		   			});
+		   		//similarly, label for the concept
+		   		oneStudent.append("text")
+		   			.attr("class", "concept_name info_overlay")
+		   			.attr("transform", "translate(" + (100 + (markerWidth * (conceptCount + numShown - 0.75 * numShownThisRound))) + "," + (lineHeight*(j) - 6) + "), rotate(-60)")
+		   			.style("visibility", "hidden")
+		   			.text(concept);
+		   		 
 		   			conceptCount++;
 		   		}
         	});
@@ -374,7 +392,10 @@ function updateStudentList(){
 		   overlay.attr("width", bg.attr("width"))
 		   		  .attr("height", 20)
 		   		  .attr("x", 0)
-		   		  .attr("y", bg.attr("y"));
+		   		  .attr("y", bg.attr("y"))
+		   		  .on("click", function(){ 
+		   				studentClicked("deselect"); //just want to deselect everything. Note this is super hacky bc clicking "anywhere" will not dismiss the selection, only on a student line
+		  		 	});;
 		j++;    
                     
         });
@@ -382,12 +403,12 @@ function updateStudentList(){
 
 function studentClicked(source){
 	//console.log("click!");
-	if(CURRENT_SELECTION == null){ //nothing currently selected
+	if(CURRENT_SELECTION == null && source != "deselect"){ //nothing currently selected
 		CURRENT_SELECTION = source.parentNode; //the student holder group
 		
 		//hide all
 		STUDENT_LIST_HOLDER.selectAll(".student_bg").attr("class", "student_bg unselected").style("visibility", "hidden");
-		STUDENT_LIST_HOLDER.selectAll("text").style("opacity", 0.3);
+		STUDENT_LIST_HOLDER.selectAll("text").style("opacity", 0.05);
 		STUDENT_LIST_HOLDER.selectAll(".overlay").style("visibility", "visible"); //TODO each node must have an overlay with transparency for whited/grayed out effect
 		
 		//show selected
