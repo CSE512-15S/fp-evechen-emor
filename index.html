@@ -66,6 +66,23 @@
 		 	  pointer-events:none
 		   }
 		   
+		   .marker{
+		   		stroke-linecap: null;
+		   		stroke-linejoin: null
+		   		stroke-width: 2;
+		   		stroke: #000000;		   
+		   }
+		   
+		   .correct.marker{
+		   		/*stroke: #7B7B7B;*/
+		   		fill: #000000;
+		   }
+		   
+		   .incorrect.marker{
+		   		stroke-width: 2;   
+		   		fill: #000000;
+		   }
+		   
 		   .student_bg .unselected{
 
 		   }
@@ -119,7 +136,8 @@ var width = 1500;
 	height = 2000;
 	
 var lineHeight = 20; //height of each student line	
-var markerWidth = 10; //width of each check/cross
+var markerWidth = 20; //width of each check/cross
+var nameWidth = 125;
 
 var CORRECTNESS_REDGREEN = d3.scale.quantize()
 		.domain([0, 1])
@@ -129,7 +147,8 @@ var CORRECTNESS_ORANGEBLUE = d3.scale.quantize()
 		.domain([0, 1])
 		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#e0f3f8","#abd9e9","#74add1"]);
 
-var check_mark = 'M 197.67968,534.31563 C 197.40468,534.31208 196.21788,532.53719 195.04234,530.37143 L 192.905,526.43368 L 193.45901,525.87968 C 193.76371,525.57497 194.58269,525.32567 195.27896,525.32567 L 196.5449,525.32567 L 197.18129,527.33076 L 197.81768,529.33584 L 202.88215,523.79451 C 205.66761,520.74678 208.88522,517.75085 210.03239,517.13691 L 212.11815,516.02064 L 207.90871,520.80282 C 205.59351,523.43302 202.45735,527.55085 200.93947,529.95355 C 199.42159,532.35625 197.95468,534.31919 197.67968,534.31563 z'
+var check_mark = "m0,7.77042l2.04159,-2.0423l5.59291,5.59217l9.32318,-9.3203l2.04231,2.04089l-11.3655,11.36402 z";
+var x_mark = "m 5,2 l 13,13 M 18,2 L 4,15";
 /**********************************************
 Loading/Setup
 ***********************************************/
@@ -233,7 +252,7 @@ function drawTimeline()
 		.attr("transform", "translate(0," + height / 2 + ")")
 		.attr("r", 9);
 
-	// slider
+// slider
 // 		.call(brush.event)
 // 	  .transition() // gratuitous intro!
 // 		.duration(750)
@@ -317,29 +336,34 @@ function updateStudentList(){
            		 var numCorrectThisRound = 0;
         	
 				for(var x = 0; x < BY_STUDENT[student].concepts[concept].problems.length; x++){
+                    
                     //markers for correct/incorrect problems
-                    oneStudent.append("text")
-                            .attr("x", function(d){  return 100 + markerWidth * (numShown + conceptCount);})
-                            .attr("y", function(d){  return lineHeight*(j+1);})
+                    oneStudent.append("path")
+                            .attr("transform", "translate(" + (nameWidth + markerWidth * (numShown + conceptCount)) + ","
+                            	+ (lineHeight*(j)) + ")")
                             .attr("width", markerWidth)
+                            .attr("height", markerWidth)
                             .attr("class", "marker")
-                            .text(function(d){
+                            .attr("d", function(d){
                                 if(new Date(BY_STUDENT[student].concepts[concept].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
                                 	numShown++;
                                 	numShownThisRound++;
                                     if(BY_STUDENT[student].concepts[concept].problems[x].correctness == "correct"){
                                     	numCorrect++;
                                     	numCorrectThisRound++;
-                                        return "O";
+                                        d3.select(this).attr("class", "marker correct");
+                                        return check_mark;
                                     }
-                                    else
-                                        return "X";
+                                    else{
+                                        d3.select(this).attr("class", "marker incorrect");
+                                        return x_mark;
+                                    }
                                 }
                                 else{
                                     this.remove();
                                     return "";
                                 }
-                            });          
+                            });                         
                 }
                 if(BY_STUDENT[student].concepts[concept].problems.length > 0 && numShownThisRound > 0){ //how to only show concepts actually shown??
                 
@@ -350,7 +374,7 @@ function updateStudentList(){
 						return markerWidth * (numShownThisRound);
 					})
 					.attr("height", "5px")
-					.attr("x", 100 + markerWidth * (conceptCount + numShown - numShownThisRound))
+					.attr("x", nameWidth + markerWidth * (conceptCount + numShown - numShownThisRound))
 					.attr("y", function(d){  return  lineHeight*(j) - 6})
 					.style("visibility", "hidden")
 					.style("fill", function(d){
@@ -362,7 +386,7 @@ function updateStudentList(){
 		   		//similarly, label for the concept
 		   		oneStudent.append("text")
 		   			.attr("class", "concept_name info_overlay")
-		   			.attr("transform", "translate(" + (100 + (markerWidth * (conceptCount + numShown - 0.5 * numShownThisRound))) + "," + (lineHeight*(j) - 6) + "), rotate(-60)")
+		   			.attr("transform", "translate(" + (nameWidth + (markerWidth * (conceptCount + numShown - 0.5 * numShownThisRound))) + "," + (lineHeight*(j) - 6) + "), rotate(-60)")
 		   			.style("visibility", "hidden")
 		   			.text(concept);
 		   		 
@@ -371,14 +395,16 @@ function updateStudentList(){
         	});
 
 		
+		//student name
 		oneStudent.append("text")
 		   .attr("x", function(d){  return 0;})
 		   .attr("class", "student_name")
-		   .attr("y", function(d){  return lineHeight*(j+1);})
+		   .attr("y", function(d){  return lineHeight*(j+1)-4;}) //the "-4" just shifts words up a bit; modify as necessary
 		   .text(function(){return BY_STUDENT[student].name;}); 
-		   
+		
+		//set up values for background rectangle
 		bg.attr("width", function(){
-				return 100 + markerWidth * (numShown + conceptCount);
+				return nameWidth + markerWidth * (numShown + conceptCount -1);
 			})
 			//.data(function(){return [{elem: bg, data: BY_STUDENT[student]}]})
 			.attr("height", "20px")
