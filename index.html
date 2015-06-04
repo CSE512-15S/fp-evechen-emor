@@ -20,7 +20,9 @@
 			   stroke-width: 10px;
 			   stroke-linecap: round;
 			 }*/
-
+			.x line {
+				stroke: #ddd;
+			}
 				
 			 .axis .halo {
 			   fill: none;
@@ -152,6 +154,8 @@ var SLIDER;
 var BRUSH;
 var TIME_SCALE;
 var TICK_VALUES = []; //all the ticks that show up on the time bar
+var TIME_TICK_VALUES = [];
+var timesteps = 8;
 
 var width = 1500;
 	height = 2000;
@@ -245,6 +249,16 @@ function reshapeStudentData(){
 	
     
     console.log(CLASS_START + " " + CLASS_END);
+    var tstart = Math.floor(new Date(CLASS_START).getTime() / 1000);
+    var  tend = Math.floor(new Date(CLASS_END).getTime() / 1000);
+    var step = (tend - tstart)/timesteps;
+    
+    TIME_TICK_VALUES.push(CLASS_START);
+    for(var x = 1; x < timesteps; x++)
+    {
+    	TIME_TICK_VALUES.push(new Date((tstart + x * step)*1000));
+    }
+    TIME_TICK_VALUES.push(CLASS_END);
 }
 	
 SVG = d3.select("body").append("svg")
@@ -283,9 +297,10 @@ function drawTimeline()
 		.call(d3.svg.axis()
 		  .scale(TIME_SCALE)
 		  .orient("bottom")
+		  .tickValues(TIME_TICK_VALUES)
 		  .tickFormat(function(d) { return formatDate(d); })
-		  .tickSize(0)
-		  .tickPadding(12))
+		  .tickSize(10, 0)
+		  .tickPadding(8))
 	  .select(".domain")
 	  //.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
 		.attr("class", "halo");
