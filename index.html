@@ -65,7 +65,12 @@
 		   .student_name, .marker, .info_overlay{
 		 	  pointer-events:none
 		   }
-		   
+		
+			.student_bg {
+				stroke-width: 1px;
+				stroke: #777777;
+			}
+		
 		   .student_bg .unselected{
 
 		   }
@@ -104,6 +109,7 @@ Global Variables
 //JSON objects
 var BY_STUDENT //is this necessary? maybe for the less real time version
 var CONCEPTS = [];
+var CONCEPT_LABELS = [];
 var BY_CONCEPT = {}; //for the more realtime version
 var SVG;
 
@@ -118,7 +124,8 @@ var TIME_SCALE;
 var width = 1500;
 	height = 2000;
 	
-var lineHeight = 20; //height of each student line	
+var lineHeight = 20; //height of each student line
+var conceptTitleHeight = 16; // height of the concept title	
 var markerWidth = 10; //width of each check/cross
 
 var CORRECTNESS_REDGREEN = d3.scale.quantize()
@@ -171,6 +178,31 @@ function reshapeStudentData(){
             BY_CONCEPT[group][student]["problems"] = BY_STUDENT[student].concepts[group]["problems"];
         }
     }
+
+	// re-order concepts and clean up concept names
+	for (i in CONCEPTS) {
+		concept = CONCEPTS[i]
+		concept = concept.charAt(0).toUpperCase() + concept.slice(1);
+		concept = concept.charAt(0) + concept.charAt(1).toUpperCase() + concept.slice(2);
+		problem = concept.slice(5);
+		concept = concept.slice(0,5);
+		
+		if (problem[0] == "e") {
+			problem = "Exercise Problem " + problem.slice(1);
+		}
+		else if (problem[0] == "w") {
+			problem = "Workbook Problem " + problem.slice(1);
+		}
+		
+		CONCEPT_LABELS[i] = concept + " " + problem
+	}
+	CONCEPTS.sort()
+	CONCEPT_LABELS.sort
+	console.log("CONCEPTS: ", CONCEPTS)
+	console.log("CONCEPT_LABELS: ", CONCEPT_LABELS)
+	
+	
+	
     
     console.log(CLASS_START + " " + CLASS_END);
 }
@@ -298,7 +330,7 @@ function updateStudentList(){
         	   .data(student) 
 			   .attr("class", "studentHolder")
 			   .attr("height", lineHeight)
-			   .attr("transform", "translate(0," + j * 3 + ")");
+			   .attr("transform", "translate(0," + j * 5 + ")");
 			
         	var numShown = 0;
             var numCorrect = 0;
@@ -372,10 +404,11 @@ function updateStudentList(){
 
 		
 		oneStudent.append("text")
-		   .attr("x", function(d){  return 0;})
+		   .attr("x", function(d){  return 5;})
 		   .attr("class", "student_name")
-		   .attr("y", function(d){  return lineHeight*(j+1);})
+		   .attr("y", function(d){  return conceptTitleHeight + (lineHeight*j) + 4;})
 		   .text(function(){return BY_STUDENT[student].name;}); 
+		
 		   
 		bg.attr("width", function(){
 				return 100 + markerWidth * (numShown + conceptCount);
@@ -383,7 +416,7 @@ function updateStudentList(){
 			//.data(function(){return [{elem: bg, data: BY_STUDENT[student]}]})
 			.attr("height", "20px")
 			.attr("x", 0)
-			.attr("y", function(){  return  lineHeight*(j)})
+			.attr("y", function(){  return lineHeight*(j) + 4})
 			.attr("class", "student_bg")
 			.style("fill", function(){
 				if(isNaN(numCorrect/numShown))
@@ -499,26 +532,26 @@ function updateTree(){
 		var prevY = 0;
         nodes.each(function(d, i){
         
-            var j = 0;
+            var j = 0.5;
             
             //removing old elements - necessary?
             d3.select(this).selectAll(".studentHolder").remove(); 
             d3.select(this).selectAll(".student_bg").remove();
             d3.select(this).selectAll(".conceptTitle").remove();
                     
-        //name of state
-        d3.select(this).append("text")
-        	.attr("class", "conceptTitle")
-        	.attr("x", function(){  return 100;})
-		  	.attr("y", function(){  return prevY;})
-        	.text(function(d){return d;});
+	        //name of state
+	        d3.select(this).append("text")
+	        	.attr("class", "conceptTitle")
+	        	.attr("x", function(){  return 100;})
+			  	.attr("y", function(){  return prevY;})
+	        	.text(function(d){return d;});
             
             for(student in BY_CONCEPT[d]){
                 if( BRUSH.extent()[0] > BY_CONCEPT[d][student].start &&
                     BRUSH.extent()[0] < BY_CONCEPT[d][student].end){
                     var grp = d3.select(this).append("g")
                                 .attr("class", "studentHolder")
-                                .attr("transform", "translate(0," + j * 3 + ")");
+                                .attr("transform", "translate(0," + j * 5 + ")");
                     
                     //calculating bg width and color
                     var numShown = 0;
@@ -533,7 +566,7 @@ function updateTree(){
                     
                     grp.append("rect")
                         .attr("width", function(){
-                        	return 100 + markerWidth*numShown + "px";
+                        	return 110 + markerWidth*numShown + "px";
                         })
    						.attr("height", "20px")
                         .attr("x", function(){  return 100;})
@@ -551,7 +584,7 @@ function updateTree(){
                     		.attr("class", "marker")
                     		.attr("width", markerWidth)
                             .attr("x", function(d, i){  return 200 + (markerWidth * i);})
-                            .attr("y", function(){  return prevY + (lineHeight*(j+1));})
+                            .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
                             .text(function(d){
                                 if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
                                     if(d.correctness == "correct")
@@ -565,22 +598,24 @@ function updateTree(){
                                 }
                             });                    
                     markers.exit().remove();
-                    
+
                     //student name
                      grp.append("text")
                      		.attr("class", "student_name")
-                            .attr("x", function(){  return 100;})
-                            .attr("y", function(){  return prevY + (lineHeight*(j+1));})
+                            .attr("x", function(){  return 105;})
+                            .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
                             .text(function(){return BY_CONCEPT[d][student].name;});                   
                     j++;
                  }
             }
+			
+			
             
             //position and size containing rect appropriately
             d3.select(this).select(".nodeVisual")
-            	.attr("height", 20*j)
+            	.attr("height", 25*j)
             	.attr("y", function(d, i){  return prevY;});
-            prevY = prevY + 20*(j) + 50;           
+            prevY = prevY + 25*(j) + 50;           
             
         });
         
