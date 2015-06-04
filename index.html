@@ -13,22 +13,34 @@
 			   user-select: none;
 			 }
 
-			 .axis .domain {
+			 /*.axis .domain {
 			   fill: none;
 			   stroke: #000;
 			   stroke-opacity: .3;
 			   stroke-width: 10px;
 			   stroke-linecap: round;
-			 }
+			 }*/
 
-
+				
 			 .axis .halo {
 			   fill: none;
 			   stroke: #ddd;
 			   stroke-width: 8px;
 			   stroke-linecap: round;
 			 }
-
+			 
+			 .activity_bar {
+			   fill: none;
+			   stroke-width: 0px;
+			 }
+			
+			  .activity .tick {
+				  stroke: #999999;
+			  }
+			  .activity path {
+					stroke-width: 0;
+			  }
+			
 			 .slider .handle {
 			   fill: #fff;
 			   stroke: #000;
@@ -50,7 +62,7 @@
 			 shape-rendering: crispEdges;
 			 stroke: #aaa;
 		   }
-
+		
 		   .nodeVisual {
 		   	fill: none;
 			 /*stroke: #fff;
@@ -80,11 +92,12 @@
 		   
 		   .correct.marker{
 		   		/*stroke: #7B7B7B;*/
+		   		stroke-width: 0;
 		   		fill: #000000;
 		   }
 		   
 		   .incorrect.marker{
-		   		stroke-width: 2;   
+		   		stroke-width: 3;   
 		   		fill: #000000;
 		   }
 		   
@@ -138,6 +151,7 @@ var TIMELINE; //the slider for time
 var SLIDER; 
 var BRUSH;
 var TIME_SCALE;
+var TICK_VALUES = []; //all the ticks that show up on the time bar
 
 var width = 1500;
 	height = 2000;
@@ -194,7 +208,14 @@ function reshapeStudentData(){
             BY_CONCEPT[group][student] = {name: name};
             BY_CONCEPT[group][student]["start"] = start;
             BY_CONCEPT[group][student]["end"] = end;
-            BY_CONCEPT[group][student]["problems"] = BY_STUDENT[student].concepts[group]["problems"];
+            var probs = BY_STUDENT[student].concepts[group]["problems"];
+            BY_CONCEPT[group][student]["problems"] = probs;
+            for(var x = 0; x < probs.length; x++){
+            	var time = new Date(probs[x].timestamp*1000);
+            	if(TICK_VALUES.indexOf(time) == -1)
+            		TICK_VALUES.push(time);
+            }
+            
         }
     }
 
@@ -234,6 +255,7 @@ SVG = d3.select("body").append("svg")
 //Timeline
 function drawTimeline()
 {
+	//TODO remember to redraw this every time you switch class sections
     var formatDate = d3.time.format("%X");
 	var margin = {top: 200, right: 50, bottom: 200, left: 50},
 		width = 600,
@@ -267,7 +289,21 @@ function drawTimeline()
 	  .select(".domain")
 	  //.select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
 		.attr("class", "halo");
+	
+	//Add a second axis for the other tick marks
+	t.append("g")
+		.attr("class", "activity axis")
+		.attr("transform", "translate(0," + 46 + ")")
+		.call(d3.svg.axis()
+		  .scale(TIME_SCALE)
+		  .orient("bottom")
+		  .tickSize(8)
+		  .tickFormat("")
+		  .tickValues(TICK_VALUES))
+	  .select(".domain")
+		.attr("class", "activity_bar");
 
+	
 	SLIDER = t.append("g")
 		.attr("class", "slider")
 		.call(BRUSH);
@@ -305,17 +341,6 @@ function drawTimeline()
       updateStudentList();
 	}
 }
-
-// Grouping students into concepts - for loop or for-in?
-// //make an array per concept, based on concepts JSON
-// for (student : BY_STUDENT) {
-// 	for(group : student.values.concepts){
-// 		for (problem  : group){
-// 			//check timestamp
-// 			//if timestamp is within current time selection, add to appropriate array
-// 		}
-// }
-// //take all arrays and redraw the concepts
 /********************************
 LIST VIEW - Alphabetical list of students - May be duplicating effort of some things done in other section, but will leave like this for now
 *********************************/
@@ -472,20 +497,24 @@ function studentClicked(source){
 		
 		//hide all
 		STUDENT_LIST_HOLDER.selectAll(".student_bg").attr("class", "student_bg unselected").style("visibility", "hidden");
-		STUDENT_LIST_HOLDER.selectAll("text").style("opacity", 0.05);
+		STUDENT_LIST_HOLDER.selectAll("text").style("opacity", 0.1);
 		STUDENT_LIST_HOLDER.selectAll(".overlay").style("visibility", "visible"); //TODO each node must have an overlay with transparency for whited/grayed out effect
+		STUDENT_LIST_HOLDER.selectAll("path").style("opacity", 0.1);
 		
 		//show selected
 		d3.select(CURRENT_SELECTION).select(".student_bg").attr("class", "student_bg selected").style("visibility", "visible");
 		d3.select(CURRENT_SELECTION).selectAll("text").style("opacity", 1);
 		d3.select(CURRENT_SELECTION).select(".overlay").style("visibility", "hidden");	
 		d3.select(CURRENT_SELECTION).selectAll(".info_overlay").style("visibility", "visible");	
+		d3.select(CURRENT_SELECTION).selectAll("path").style("opacity", 1);
+	
 	}
 	else { //deselect everything if something is selected, unless you tapped on the current selection
 		STUDENT_LIST_HOLDER.selectAll(".student_bg").attr("class", "student_bg").style("visibility", "visible");
 		STUDENT_LIST_HOLDER.selectAll("text").style("opacity", 1);
 		STUDENT_LIST_HOLDER.selectAll(".overlay").style("visibility", "hidden");
 		STUDENT_LIST_HOLDER.selectAll(".info_overlay").style("visibility", "hidden");	
+		STUDENT_LIST_HOLDER.selectAll("path").style("opacity", 1);
 		CURRENT_SELECTION = null;
 	}
 }
