@@ -161,6 +161,23 @@
 				height: 452px;
 			}
 			
+			.title{
+				font-size: 20px;
+				position: absolute:
+			}
+			
+			div{
+				font-family: Verdana, Sans-Serif;
+			}
+			.infobox{
+				font-size: 12px;
+				position: absolute;
+				left: 800px;
+				top: 60px;
+				width: 450px;
+				height: 100px;
+				text-align: justify;
+			}
 			/*.container::-webkit-scrollbar{
 				width: 0; /* May be Chrome only? */
 			}*/
@@ -303,6 +320,9 @@ function reshapeStudentData(){
     TIME_TICK_VALUES.push(CLASS_END);
 }
 	
+/************************
+General drawing
+************************/
 SVG = d3.select("body").append("svg")
     .attr("width", mainWidth)
     .attr("height", mainHeight)
@@ -314,6 +334,17 @@ scale = x 0 0 y 0 0
 
 */
 TABLET = SVG.append("g").append("path").attr("d", tablet_path).attr("transform", "matrix(0.92,0,0,0.92,125,-15)");
+
+//title
+SVG.append("text")
+	.attr("class", "title")
+	.attr("transform", "translate(185,25)")
+	.text("Visualizing Real-Time Student Tablet Data");
+	
+//informational text
+d3.select("body").append("div")
+	.attr("class", "infobox")
+	.text("Insert informational stuff here. Visualizations designed for Chrome and best viewed on screen resolution >= 13inch Macbook. Blah blah blah blah more text goes here");
 /*************************
 Timeline Things
 *************************/
@@ -468,12 +499,12 @@ function drawStudentList(){
 			//.attr("transform", "translate(700," + 2*margin.top + ")");
 			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE + ", 700," + 2*margin.top + ")");
 
-	//Nell! Need something like below code chunk to get aggregate part to display properly on the tablet
+	//Nell! Need something like below code chunk to get aggregate part to display properly on the tablet.
 	/*STUDENT_LIST_HOLDER = d3.select("body").append("div")
 				.attr("class", "container")
 			.append("svg")
 			.attr("width", 1000)
-			.attr("height", 2000)
+			.attr("height", 1000)
 			.append("g")
 			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
 			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");*/
