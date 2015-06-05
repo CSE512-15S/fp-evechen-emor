@@ -52,13 +52,6 @@
 			 }
 			 
 			/*Concept Tree*/
-		   .link {
-			 fill: none;
-			 stroke: RGB(128,128,128);
-			 stroke-width: 10;
-			 opacity : 0.5;
-		   }
-
 		   .border {
 			 fill: none;
 			 shape-rendering: crispEdges;
@@ -122,20 +115,55 @@
 		   		stroke: black;
 		   }
 		   
-		   text.concept_name{
-		   		font-size: 8;
-		   }
-		   
 		   text{
 		   		font-family: Verdana, Sans-Serif;
 		   		-webkit-user-select: none;
 		   }
 		   
-		   #play{
-		   		left: 40px;
-		   		top: 49px;
-		   		position: absolute;
+		   text.sliderAxisLabel{
+				font-size : 12px;
+				fill: #777;
 		   }
+		   
+		   #play{
+			 left: 20px;
+			 top: 49px;
+			 position: absolute;
+			 background: #004276;
+			 padding-right: 26px;
+			 border-radius: 2px;
+			 border: none;
+			 color: white;
+			 margin: 0;
+			 padding: 0 12px;
+			 width: 60px;
+			 cursor: pointer;
+			 height: 20px;
+			 font: 13px sans-serif;
+		   }
+
+		   #g-play-button:hover {
+			 background-color: #064d84;
+		   }
+
+		   #g-play-button:active {
+			 background-color: #002657;
+		   }
+			
+			.container{
+				position: absolute;
+				overflow: scroll;
+				left: 244px;
+				top: 161px;
+				color: "blue";
+				background-color: "blue";
+				width: 314px;
+				height: 452px;
+			}
+			
+			/*.container::-webkit-scrollbar{
+				width: 0; /* May be Chrome only? */
+			}*/
 		</style>
 		<link rel="stylesheet" href="d3.slider.css" />  
 		<script src="d3.min.js"></script>
@@ -164,9 +192,11 @@ var TIME_TICK_VALUES = [];
 var timesteps = 8;
 var PLAY_BUTTON;
 var CURRENT_VALUE;
+var TABLET;
+var SCALE = 0.7 //scale the 2 vis graphics down to fit on tablet screen and not look ridiculously large
 
-var width = 1500;
-	height = 2000;
+var mainWidth = 1200;
+	mainHeight = 655;
 	
 var lineHeight = 20; //height of each student line
 var conceptTitleHeight = 16; // height of the concept title	
@@ -180,8 +210,16 @@ var CORRECTNESS_ORANGEBLUE = d3.scale.quantize()
 		.domain([0, 1])
 		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#e0f3f8","#abd9e9","#74add1"]);
 
+//SVG path data
 var check_mark = "m0,7.77042l2.04159,-2.0423l5.59291,5.59217l9.32318,-9.3203l2.04231,2.04089l-11.3655,11.36402 z";
 var x_mark = "m 5,2 l 13,13 M 18,2 L 4,15";
+//var tablet = "m 640,128 q 0,26 -19,45 -19,19 -45,19 -26,0 -45,-19 -19,-19 -19,-45 0,-26 19,-45 19,-19 45,-19 26,0 45,19 19,19 19,45 z m 384,160 v 960 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 H 160 q -13,0 -22.5,-9.5 Q 128,1261 128,1248 V 288 q 0,-13 9.5,-22.5 Q 147,256 160,256 h 832 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 128,960 V 160 Q 1152,94 1105,47 1058,0 992,0 H 160 Q 94,0 47,47 0,94 0,160 v 1088 q 0,66 47,113 47,47 113,47 h 832 q 66,0 113,-47 47,-47 47,-113 z"
+var tablet_path = "M463.113,128.592H119.479c-10.573,0-19.032,8.458-19.032,19.032v560.388" + 
+	"c0,10.573,8.459,19.032,19.032,19.032h343.634c10.574,0,19.032-8.459,19.032-19.032V147.624"+
+	"C482.145,137.05,473.687,128.592,463.113,128.592z M290.768,150.796c3.172,0,5.286,2.114,5.286,5.287"+
+	"c0,3.172-2.114,5.287-5.286,5.287c-3.173,0-5.287-2.115-5.287-5.287C285.481,152.91,287.595,150.796,290.768,150.796z"+
+	 "M290.768,714.355c-8.459,0-14.803-6.344-14.803-14.803c0-8.458,6.344-14.803,14.803-14.803c8.458,0,14.803,6.345,14.803,14.803"+
+	"C306.627,706.954,299.226,714.355,290.768,714.355z M462.056,673.12h-341.52V182.516h341.52V673.12L462.056,673.12z"
 /**********************************************
 Loading/Setup
 ***********************************************/
@@ -263,12 +301,19 @@ function reshapeStudentData(){
     	TIME_TICK_VALUES.push(new Date((tstart + x * step)*1000));
     }
     TIME_TICK_VALUES.push(CLASS_END);
-    CURRENT_VALUE = CLASS_END;
 }
 	
 SVG = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
+    .attr("width", mainWidth)
+    .attr("height", mainHeight)
+
+/* SVG matrix transforms
+
+translate = 1 0 0 1 x y
+scale = x 0 0 y 0 0
+
+*/
+TABLET = SVG.append("g").append("path").attr("d", tablet_path).attr("transform", "matrix(0.92,0,0,0.92,125,-15)");
 /*************************
 Timeline Things
 *************************/
@@ -291,7 +336,7 @@ function playTimeline() {
     targetValue = CLASS_END;
 
     SLIDER.transition()
-        .duration((targetValue - CURRENT_VALUE) / (targetValue - CLASS_START) * 20000)
+        .duration((targetValue - CURRENT_VALUE) / (targetValue - CLASS_START) * 40000)
         .ease("linear")
         .call(BRUSH.extent([targetValue, targetValue]))
         .call(BRUSH.event);
@@ -326,6 +371,17 @@ function drawTimeline()
 		.attr("id", "timelineHolder")
 		.attr("transform", "translate(100, 0)");
 	
+	//labels for time
+	t.append("text")
+		.attr("class", "sliderAxisLabel")
+		.attr("transform", "translate(-40, " + (height-8) + ")")
+		.text("Lesson Start");
+			
+	t.append("text")
+		.attr("class", "sliderAxisLabel")
+		.attr("transform", "translate(" + (width - 30) + "," + (height-8) + ")")
+		.text("Lesson End");
+			
 	//Add axis
 	t.append("g")
 		.attr("class", "x axis")
@@ -377,7 +433,7 @@ function drawTimeline()
 // 		.duration(750)
 // 		.call(brush.extent([70, 70]))
 // 		.call(brush.event);
-	
+	    CURRENT_VALUE = CLASS_END;
 	//what happens when you drag the slider?
 	function brushed() {
 	  CURRENT_VALUE = BRUSH.extent()[0];
@@ -409,7 +465,18 @@ function drawStudentList(){
 			.attr("width", width)
 			.attr("height", height)
 			.append("g")
-			.attr("transform", "translate(700," + 2*margin.top + ")");
+			//.attr("transform", "translate(700," + 2*margin.top + ")");
+			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE + ", 700," + 2*margin.top + ")");
+
+	//Nell! Need something like below code chunk to get aggregate part to display properly on the tablet
+	/*STUDENT_LIST_HOLDER = d3.select("body").append("div")
+				.attr("class", "container")
+			.append("svg")
+			.attr("width", 1000)
+			.attr("height", 2000)
+			.append("g")
+			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
+			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");*/
 		
 		updateStudentList();
 }
@@ -592,14 +659,17 @@ var TREE_LINKS;
 function drawTree(){ //aka update tree; remember animations for shrinking and growing and moving nodes
 
 	var margin = {top: 100, right: 0, bottom: 100, left: 0},
-		width =600,
+		width = 600,
 		height =  1000;
 
-	TREE_HOLDER = SVG.append("g")
-			.attr("width", width + margin.left + margin.right)
+	TREE_HOLDER = d3.select("body").append("div")
+				.attr("class", "container")
+			.append("svg")
+			.attr("width", 1000)
 			.attr("height", 2000)
 			.append("g")
-			.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
+			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
+			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");
 
 	/*var size= [width, height];
 
@@ -648,7 +718,7 @@ function updateTree(){
 	        //name of state
 	        d3.select(this).append("text")
 	        	.attr("class", "conceptTitle")
-	        	.attr("x", function(){  return 100;})
+	        	.attr("x", function(){  return 0;})
 			  	.attr("y", function(){  return prevY;})
 	        	.text(function(d){return d;});
             
