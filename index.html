@@ -130,6 +130,12 @@
 		   		font-family: Verdana, Sans-Serif;
 		   		-webkit-user-select: none;
 		   }
+		   
+		   #play{
+		   		left: 40px;
+		   		top: 49px;
+		   		position: absolute;
+		   }
 		</style>
 		<link rel="stylesheet" href="d3.slider.css" />  
 		<script src="d3.min.js"></script>
@@ -156,6 +162,8 @@ var TIME_SCALE;
 var TICK_VALUES = []; //all the ticks that show up on the time bar
 var TIME_TICK_VALUES = [];
 var timesteps = 8;
+var PLAY_BUTTON;
+var CURRENT_VALUE;
 
 var width = 1500;
 	height = 2000;
@@ -180,8 +188,8 @@ Loading/Setup
 d3.json("data_files/short_sessions/students_4.json", function(data){
 			BY_STUDENT = data; 
 			reshapeStudentData();
-            drawTimeline();	
-			//loadConcepts();
+			drawTimeline();
+            initPlayButton();	
 			drawStudentList();
 			drawTree();
 });
@@ -245,10 +253,6 @@ function reshapeStudentData(){
 	console.log("CONCEPTS: ", CONCEPTS)
 	console.log("CONCEPT_LABELS: ", CONCEPT_LABELS)
 	
-	
-	
-    
-    console.log(CLASS_START + " " + CLASS_END);
     var tstart = Math.floor(new Date(CLASS_START).getTime() / 1000);
     var  tend = Math.floor(new Date(CLASS_END).getTime() / 1000);
     var step = (tend - tstart)/timesteps;
@@ -259,16 +263,48 @@ function reshapeStudentData(){
     	TIME_TICK_VALUES.push(new Date((tstart + x * step)*1000));
     }
     TIME_TICK_VALUES.push(CLASS_END);
+    CURRENT_VALUE = CLASS_END;
 }
 	
 SVG = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
+/*************************
+Timeline Things
+*************************/
+function initPlayButton(){
+	PLAY_BUTTON = d3.select("#play")
+					.on("click", playTimeline);
+	
+}
+
+function playTimeline() {
+  if (SLIDER.node().__transition__) {
+    SLIDER.interrupt();
+    this.textContent = "Play";
+  } else {
+    if (CURRENT_VALUE === CLASS_END){ 
+    	SLIDER
+        .call(BRUSH.extent([CURRENT_VALUE = CLASS_START, CURRENT_VALUE]))
+        .call(BRUSH.event);
+	}
+    targetValue = CLASS_END;
+
+    SLIDER.transition()
+        .duration((targetValue - CURRENT_VALUE) / (targetValue - CLASS_START) * 20000)
+        .ease("linear")
+        .call(BRUSH.extent([targetValue, targetValue]))
+        .call(BRUSH.event);
+
+    this.textContent = "Pause";
+  }
+}
 
 
 //Timeline
 function drawTimeline()
 {
+	
 	//TODO remember to redraw this every time you switch class sections
     var formatDate = d3.time.format("%X");
 	var margin = {top: 200, right: 50, bottom: 200, left: 50},
@@ -344,14 +380,15 @@ function drawTimeline()
 	
 	//what happens when you drag the slider?
 	function brushed() {
-	  var value = BRUSH.extent()[0];
+	  CURRENT_VALUE = BRUSH.extent()[0];
 
 	  if (d3.event.sourceEvent) { // not a programmatic event
-		value = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
-		BRUSH.extent([value, value]);
+		CURRENT_VALUE = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
+		PLAY_BUTTON.text("Play");
+		BRUSH.extent([CURRENT_VALUE, CURRENT_VALUE]);
 	  }
-        
-	  handle.attr("cx", TIME_SCALE(value)); //location of center of handle
+
+	  handle.attr("cx", TIME_SCALE(CURRENT_VALUE)); //location of center of handle
       updateTree();
       updateStudentList();
 	}
@@ -700,6 +737,6 @@ function connector(d, i){
 }
 		 
 </script>
-
+<button id="play">Play</button>
 </body>
 </html>
