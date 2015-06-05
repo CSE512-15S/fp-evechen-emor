@@ -658,15 +658,13 @@ var TREE_LINKS;
 
 function drawTree(){ //aka update tree; remember animations for shrinking and growing and moving nodes
 
-	var margin = {top: 100, right: 0, bottom: 100, left: 0},
-		width = 600,
-		height =  1000;
+	//var margin = {top: 100, right: 0, bottom: 100, left: 0};
 
 	TREE_HOLDER = d3.select("body").append("div")
 				.attr("class", "container")
 			.append("svg")
 			.attr("width", 1000)
-			.attr("height", 2000)
+			.attr("height", 1000)
 			.append("g")
 			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
 			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");
@@ -745,7 +743,7 @@ function updateTree(){
                         	return 110 + markerWidth*numShown + "px";
                         })
    						.attr("height", "20px")
-                        .attr("x", function(){  return 100;})
+                        .attr("x", function(){  return 5;})
                         .attr("y", function(){  return prevY + (lineHeight*j);})
                     	.attr("class", "student_bg")
 					    .attr("fill", function(){
@@ -759,7 +757,7 @@ function updateTree(){
                     markers.enter().append("path")
                     		.attr("class", "marker")
                     		.attr("width", markerWidth)
-                    		.attr("transform", function(d, i){ return "translate(" + (200 + (markerWidth * i)) + "," + 
+                    		.attr("transform", function(d, i){ return "translate(" + (100 + (markerWidth * i)) + "," + 
                     				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";})
                             //.attr("x", function(d, i){  return 200 + (markerWidth * i);})
                             //.attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
@@ -784,7 +782,7 @@ function updateTree(){
                     //student name
                      grp.append("text")
                      		.attr("class", "student_name")
-                            .attr("x", function(){  return 105;})
+                            .attr("x", function(){  return 5;})
                             .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
                             .text(function(){return BY_CONCEPT[d][student].name;});                   
                     j++;
