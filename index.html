@@ -75,7 +75,7 @@
 		
 			.student_bg {
 				stroke-width: 1px;
-				stroke: #777777;
+				stroke: #888;
 			}
 		 
 		   .marker{
@@ -756,17 +756,23 @@ function updateTree(){
                             .data(BY_CONCEPT[d][student].problems);
                     
                     //markers for correct/incorrect problems
-                    markers.enter().append("text")
+                    markers.enter().append("path")
                     		.attr("class", "marker")
                     		.attr("width", markerWidth)
-                            .attr("x", function(d, i){  return 200 + (markerWidth * i);})
-                            .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
-                            .text(function(d){
+                    		.attr("transform", function(d, i){ return "translate(" + (200 + (markerWidth * i)) + "," + 
+                    				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";})
+                            //.attr("x", function(d, i){  return 200 + (markerWidth * i);})
+                            //.attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
+                            .attr("d", function(d){
                                 if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
-                                    if(d.correctness == "correct")
-                                        return "O";
-                                    else
-                                        return "X";
+                                    if(d.correctness == "correct"){
+                                        d3.select(this).attr("class", "marker correct");
+                                        return check_mark;
+                                    }
+                                    else{
+                                   		 d3.select(this).attr("class", "marker incorrect");
+                                        return x_mark;
+                                    }
                                 }
                                 else{
                                     this.remove();
