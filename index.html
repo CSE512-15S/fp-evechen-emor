@@ -68,6 +68,11 @@
 		   .conceptTitle{
 		   	font-weight: bold;
 		   }
+		
+			.visualizationTitle {
+				font-weight: bold;
+				font-size: 20px;
+			}
 		   
 		   .student_name, .marker, .info_overlay{
 		 	  pointer-events:none
@@ -193,8 +198,8 @@ Global Variables
 //JSON objects
 var BY_STUDENT //is this necessary? maybe for the less real time version
 var CONCEPTS = [];
-var CONCEPT_LABELS = [];
 var BY_CONCEPT = {}; //for the more realtime version
+var LESSON_TITLE;
 var SVG;
 
 var CLASS_START = null; //slider start. Assuming that all classes happen in the same calendar day
@@ -251,7 +256,14 @@ d3.json("data_files/short_sessions/students_4.json", function(data){
 
 function reshapeStudentData(){
     for (student in BY_STUDENT) {
-        
+	
+		// Grab the lesson title
+        if (student == "LessonTitle") {
+			LESSON_TITLE = BY_STUDENT[student];
+			delete BY_STUDENT[student];
+			continue;
+		}
+
         var name = BY_STUDENT[student].name;
         
         for (group in BY_STUDENT[student].concepts){
@@ -286,29 +298,8 @@ function reshapeStudentData(){
         }
     }
 
-	// re-order concepts and clean up concept names
+	// re-order concepts 
 	CONCEPTS.sort()
-	/*for (i in CONCEPTS) {
-		concept = CONCEPTS[i]
-		concept = concept.charAt(0).toUpperCase() + concept.slice(1);
-		concept = concept.charAt(0) + concept.charAt(1).toUpperCase() + concept.slice(2);
-		problem = concept.slice(5);
-		concept = concept.slice(0,5);
-		
-		if (problem[0] == "e") {
-			problem = "Exercise Problem " + problem.slice(1);
-		}
-		else if (problem[0] == "w") {
-			problem = "Workbook Problem " + problem.slice(1);
-		}
-		
-		CONCEPT_LABELS[i] = concept + " " + problem
-	}
-	CONCEPTS.sort()
-	CONCEPT_LABELS.sort
-	console.log("CONCEPTS: ", CONCEPTS)
-	console.log("CONCEPT_LABELS: ", CONCEPT_LABELS)
-	*/
 	
     var tstart = Math.floor(new Date(CLASS_START).getTime() / 1000);
     var  tend = Math.floor(new Date(CLASS_END).getTime() / 1000);
@@ -694,7 +685,7 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 	//var margin = {top: 100, right: 0, bottom: 100, left: 0};
 
 	TREE_HOLDER = d3.select("body").append("div")
-				.attr("class", "container")
+			.attr("class", "container")
 			.append("svg")
 			.attr("width", 1000)
 			.attr("height", 1000)
@@ -723,7 +714,17 @@ function updateTree(){
 		.append("path")
         .attr("class", "link")
         .attr("d", connector);*/
-	
+
+	// Add a title at the top, only if it hasn't been added yet
+	vizTitle = TREE_HOLDER.selectAll(".visualizationTitle")
+	if (vizTitle[0].length == 0) {
+		var titleHolder = TREE_HOLDER.append("text")
+			.attr("class", "visualizationTitle")
+	    	.attr("x", 213)
+		  	.attr("y", 5)
+			.attr("text-anchor", "middle")
+	    	.text(LESSON_TITLE);
+	}
 	
 	//TODO separate this so that the text can get appended too...
 	var nodes = TREE_HOLDER.selectAll(".node")
@@ -736,7 +737,7 @@ function updateTree(){
 			.attr("width", nodeWidth)
 			.attr("x", function(d){  return 100;})
 
-		var prevY = 0;
+		var prevY = 50;
         nodes.each(function(d, i){
         
             var j = 0.5;
@@ -840,8 +841,6 @@ function updateTree(){
                     j++;
                  }
             }
-			
-			
             
             //position and size containing rect appropriately
             d3.select(this).select(".nodeVisual")
