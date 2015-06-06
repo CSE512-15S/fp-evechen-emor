@@ -232,7 +232,8 @@ function reshapeStudentData(){
     }
 
 	// re-order concepts and clean up concept names
-	for (i in CONCEPTS) {
+	CONCEPTS.sort()
+	/*for (i in CONCEPTS) {
 		concept = CONCEPTS[i]
 		concept = concept.charAt(0).toUpperCase() + concept.slice(1);
 		concept = concept.charAt(0) + concept.charAt(1).toUpperCase() + concept.slice(2);
@@ -252,6 +253,7 @@ function reshapeStudentData(){
 	CONCEPT_LABELS.sort
 	console.log("CONCEPTS: ", CONCEPTS)
 	console.log("CONCEPT_LABELS: ", CONCEPT_LABELS)
+	*/
 	
     var tstart = Math.floor(new Date(CLASS_START).getTime() / 1000);
     var  tend = Math.floor(new Date(CLASS_END).getTime() / 1000);
@@ -650,7 +652,26 @@ function updateTree(){
 	        	.attr("class", "conceptTitle")
 	        	.attr("x", function(){  return 100;})
 			  	.attr("y", function(){  return prevY;})
-	        	.text(function(d){return d;});
+	        	.text(function(label){					
+					if (label.indexOf("e") != -1) {
+						index = label.indexOf("e")
+						concept = label.slice(0,index);
+						problem = "Exercise " + label.slice(index+1);
+					}
+					if (label.indexOf("w") != -1) {
+						index = label.indexOf("w")
+						concept = label.slice(0,index);
+						problem = "Workbook " + label.slice(index+1);
+					}
+					concept = concept.charAt(0).toUpperCase() + concept.charAt(1).toUpperCase() + concept.slice(2);
+					
+					if (problem.indexOf("p") != -1) {
+						index = problem.indexOf("p")
+						problem = problem.slice(0,index) + " Part " + problem.slice(index+1);
+					}
+					
+					return concept + " " + problem;
+				});
             
             for(student in BY_CONCEPT[d]){
                 if( BRUSH.extent()[0] > BY_CONCEPT[d][student].start &&
