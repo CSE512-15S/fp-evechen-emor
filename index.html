@@ -1121,6 +1121,7 @@ function studentRemoveTransition(){
 function studentEnterTransition(){
 	  this.transition()
 	  .style("opacity",1)
+	  .delay(200)
 	  .duration(200);
 }
 
@@ -1170,6 +1171,8 @@ function updateTree(){
 					return concept + " " + problem;
 				});
             
+            console.log(BRUSH.extent()[0]);
+            
             for(student in BY_CONCEPT[d]){
                 if( BRUSH.extent()[0] >= BY_CONCEPT[d][student].start &&
                     BRUSH.extent()[0] <= BY_CONCEPT[d][student].end){
@@ -1187,19 +1190,18 @@ function updateTree(){
                         }
                     }
                     
-                    if(CURRENT_STUDENT_STATUS[student].concept != d){ //delete old holder and recreate new holder
+                    if(CURRENT_STUDENT_STATUS[student].concept != d || d3.select("#S" + student) == null){ //delete old holder and recreate new holder
                     	
-                    	d3.select("#S" + student)
+                    	d3.select(".S" + student)
                     			.call(studentRemoveTransition);
 						CURRENT_STUDENT_STATUS[student].concept = d;
 						
                     	grp = d3.select(this).append("g")
                     			.data(d)
-                        grp.attr("class", "studentHolder")
-                                .attr("id", "S" + student)
-                                .attr("transform", "translate(0," + j * 5 + ")")
+                        grp.attr("class", "studentHolder S" + student)
                                 .style("opacity", 0)
-                                .call(studentEnterTransition);
+                                .call(studentEnterTransition)
+                                .attr("transform", "translate(0," + j * 5 + ")");
 									
 					   grp.append("rect")
 						   .attr("width", function(){
@@ -1222,7 +1224,7 @@ function updateTree(){
                     }
                     else //update current holder
                     {
-                    	grp = d3.select(this).select("#S" + student)
+                    	grp = d3.select(this).select(".S" + student)
                     		.attr("transform", "translate(0," + j * 5 + ")");
 						grp.select("rect")
 							.attr("width", function(){
@@ -1230,21 +1232,31 @@ function updateTree(){
 							})
 							.attr("height", "20px")
 							.attr("x", function(){  return 5;})
-							.attr("y", function(){  return prevY + (lineHeight*j);})
 							.attr("class", "student_bg")
 							.attr("fill", function(){
 							return CORRECTNESS_SCALE(numCorrect/numShown);
-						});
+						})
+						.transition()
+							.attr("y", function(){  return prevY + (lineHeight*j);})
+							.duration(200);
 						
 						grp.select(".student_name")
                             .attr("x", function(){  return 5;})
-                            .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
+                            .transition()
+                            	.attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
+                            	.duration(200)
                     }
                     
-                    grp.selectAll(".marker").remove();
-                    var markers = grp.selectAll("path")
-                            .data(BY_CONCEPT[d][student].problems);
+                   /* grp.selectAll(".marker")
+                    	.transition()
+                 			.attr("transform", function(d, i){ return "translate(" + (100 + (markerWidth * i)) + "," + 
+                    				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";})
+                    		.duration(200)
+                    	.remove();*/
                     
+                    var markers = grp.selectAll("path")
+                            .data(BY_CONCEPT[d][student].problems)
+         
                     //markers for correct/incorrect problems
                     markers.enter().append("path")
                     		.attr("class", "marker")
@@ -1268,7 +1280,13 @@ function updateTree(){
                                     this.remove();
                                     return "";
                                 }
-                            });                    
+                            });  
+                    
+                    markers.transition()
+                 				.attr("transform", function(d, i){ return "translate(" + (100 + (markerWidth * i)) + "," + 
+                    				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";})
+                    			.duration(200);
+                             
                     markers.exit().remove();             
                     j++;
                  }
