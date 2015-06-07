@@ -172,6 +172,12 @@
 				 font: 13px sans-serif;
 			}
 			
+			#switchSessionsSelector {
+				left: 800px;
+				top: 200px;
+				position: absolute;
+			}
+			
 			.verticalContainer{
 				position: absolute;
 				overflow: scroll;
@@ -202,7 +208,7 @@
 			div{
 				font-family: Verdana, Sans-Serif;
 			}
-			.infobox{
+			#infobox{
 				font-size: 12px;
 				position: absolute;
 				left: 800px;
@@ -233,7 +239,6 @@ var SVG;
 var CLASS_START = null; //slider start. Assuming that all classes happen in the same calendar day
 var CLASS_END = null; //slider end
 
-var TIMELINE; //the slider for time
 var SLIDER; 
 var BRUSH;
 var TIME_SCALE;
@@ -247,7 +252,7 @@ var SCALE = 0.7 //scale the 2 vis graphics down to fit on tablet screen and not 
 
 var SWITCH_VIEWS_BUTTON;
 var CURRENT_VIEW = "concept";
-var SWITCH_SESSIONS_BUTTON;
+var SWITCH_SESSIONS_SELECTOR;
 
 var mainWidth = 1200;
 	mainHeight = 655;
@@ -278,14 +283,77 @@ var tablet_path = "M463.113,128.592H119.479c-10.573,0-19.032,8.458-19.032,19.032
 Loading/Setup
 ***********************************************/
 d3.json("data_files/short_sessions/students_4.json", function(data){
-			BY_STUDENT = data; 
-			reshapeStudentData();
-			drawTimeline();
-            initPlayButton();
-			initSwitchViewsButton();
-			drawStudentList();
-			drawTree();
+	initialize();
+	BY_STUDENT = data; 
+	reshapeStudentData();
+	drawTimeline();
+	initPlayButton();
+	drawStudentList();
+	drawTree();			
 });
+
+
+/************************
+General initialization drawing
+************************/
+function initialize(file_name) {
+	
+	// Remove the old svg if we are switching between visualizations
+	d3.select("svg").remove();
+	
+	// Reset all the global variables in case we are switching between visualizations
+	CONCEPTS = [];
+	BY_CONCEPT = {};
+	CLASS_START = null;
+	CLASS_END = null;
+	var TICK_VALUES = [];
+	var TIME_TICK_VALUES = [];
+	
+	
+	SVG = d3.select("body").append("svg")
+	    .attr("width", mainWidth)
+	    .attr("height", mainHeight)
+
+	/* SVG matrix transforms
+
+	translate = 1 0 0 1 x y
+	scale = x 0 0 y 0 0
+
+	*/
+
+	// Draw the vertical and horizontal tablets
+	SVG.append("g")
+		.attr("id","verticalTablet")
+		.style("opacity",0)
+		.append("path")
+		.attr("d", tablet_path)
+		.attr("transform", "matrix(0.92,0,0,0.92,125,-15)");
+	
+	d3.select("#verticalTablet")
+		.transition()
+		.style("opacity",1)
+		.duration(500);
+
+	SVG.append("g")
+		.attr("id","horizontalTablet")
+		.style("opacity",0)
+		.append("path")
+		.attr("d", tablet_path)
+		.attr("transform", "matrix(0.92,0,0,0.92,5,600) rotate(-90)");
+
+	//title
+	SVG.append("text")
+		.attr("class", "title")
+		.attr("transform", "translate(185,25)")
+		.text("Visualizing Real-Time Student Tablet Data");
+
+	//informational text
+	d3.select("#infobox").remove();
+	d3.select("body").append("div")
+		.attr("id", "infobox")
+		.text("Insert informational stuff here. Visualizations designed for Chrome and best viewed on screen resolution >= 13inch Macbook. Blah blah blah blah more text goes here");
+}
+
 
 function reshapeStudentData(){
     for (student in BY_STUDENT) {
@@ -345,55 +413,11 @@ function reshapeStudentData(){
     }
     TIME_TICK_VALUES.push(CLASS_END);
 }
-	
-/************************
-General drawing
-************************/
-SVG = d3.select("body").append("svg")
-    .attr("width", mainWidth)
-    .attr("height", mainHeight)
 
-/* SVG matrix transforms
-
-translate = 1 0 0 1 x y
-scale = x 0 0 y 0 0
-
-*/
-
-// Draw the vertical and horizontal tablets
-SVG.append("g")
-	.attr("id","verticalTablet")
-	.style("opacity",1)
-	.append("path")
-	.attr("d", tablet_path)
-	.attr("transform", "matrix(0.92,0,0,0.92,125,-15)");
-	
-SVG.append("g")
-	.attr("id","horizontalTablet")
-	.style("opacity",0)
-	.append("path")
-	.attr("d", tablet_path)
-	.attr("transform", "matrix(0.92,0,0,0.92,5,600) rotate(-90)");
-
-//title
-SVG.append("text")
-	.attr("class", "title")
-	.attr("transform", "translate(185,25)")
-	.text("Visualizing Real-Time Student Tablet Data");
-	
-//informational text
-d3.select("body").append("div")
-	.attr("class", "infobox")
-	.text("Insert informational stuff here. Visualizations designed for Chrome and best viewed on screen resolution >= 13inch Macbook. Blah blah blah blah more text goes here");
 
 /*************************
 Switch View Button Things
 *************************/
-
-function initSwitchViewsButton() {
-	SWITCH_VIEWS_BUTTON = d3.select("#switchViewsButton")
-							.on("click", switchViews);
-}
 
 function switchViews() {
 	if (CURRENT_VIEW == "concept") {
@@ -468,6 +492,91 @@ function switchViews() {
 	}
 }
 
+/*************************
+Switch Session Selector Things
+*************************/
+
+
+function switchSessions() {
+	var selector = document.getElementById('switchSessionsSelector');
+	var selection = selector.options[selector.selectedIndex].value;
+	
+	data_file_name = ""
+	switch (selection) {
+		case "1":
+			data_file_name = "data_files/short_sessions/students_4.json";
+			break;
+		case "2":
+			data_file_name = "data_files/short_sessions/students_41.json";
+			break;
+		case "3":
+			data_file_name = "data_files/short_sessions/students_119.json";
+			break;
+		case "4":
+			data_file_name = "data_files/short_sessions/students_208.json";
+			break;
+		case "5":
+			data_file_name = "data_files/short_sessions/students_685.json";
+			break;
+		case "6":
+			data_file_name = "data_files/long_sessions/students_229.json";
+			break;
+		case "7":
+			data_file_name = "data_files/long_sessions/students_258.json";
+			break;
+		case "8":
+			data_file_name = "data_files/long_sessions/students_327.json";
+			break;
+		case "9":
+			data_file_name = "data_files/long_sessions/students_341.json";
+			break;
+		case "10":
+			data_file_name = "data_files/long_sessions/students_595.json";
+			break;
+	}
+	
+	// fade the visualization and timeline in and out to make the transition smoother
+	if (CURRENT_VIEW == "concept") {		
+		d3.select("#conceptView")
+			.transition()
+			.style("opacity",0)
+			.duration(500);
+		d3.select("#verticalTablet")
+			.transition()
+			.style("opacity",0)
+			.duration(500)
+			.each("end", function() {
+				refreshView(data_file_name);
+			});
+	}
+	else if (CURRENT_VIEW == "aggregate") {
+		d3.select("#aggregateView")
+			.transition()
+			.style("opacity",0)
+			.duration(500);
+		d3.select("#horizontalTablet")
+			.transition()
+			.style("opacity",0)
+			.duration(500)
+			.each("end", function() {
+				refreshView(data_file_name);
+			});
+		CURRENT_VIEW = "concept";
+	}
+}
+
+function refreshView(data_file_name) {
+	// update all the visualizations
+	d3.json(data_file_name, function(data) {
+		initialize();
+		BY_STUDENT = data; 
+		reshapeStudentData();
+		drawTimeline();
+        initPlayButton();
+		drawStudentList();
+		drawTree();
+	});
+}
 
 
 
@@ -524,6 +633,7 @@ function drawTimeline()
 		.on("brush", brushed);
 
 	//Timeline holder
+	d3.select("#timelineHolder").remove();	
 	var t = SVG.append("g")
 		.attr("id", "timelineHolder")
 		.attr("transform", "translate(100, 0)");
@@ -608,18 +718,6 @@ function drawTimeline()
 	}
 }
 
-function updateView() {
-	if (CURRENT_VIEW == "concept") {
-		updateTree();
-	}
-	else if (CURRENT_VIEW == "aggregate") {
-		updateStudentList();
-	}
-	else {
-		console.log("UNSUPPORTED VIEW!");
-	}
-}
-
 
 /********************************
 LIST VIEW - Alphabetical list of students - May be duplicating effort of some things done in other section, but will leave like this for now
@@ -631,15 +729,8 @@ function drawStudentList(){
 	var margin = {top: 100, right: 0, bottom: 100, left: 0},
 		width = 600,
 		height =  2000;
-
-
-	/*STUDENT_LIST_HOLDER = SVG.append("g")
-		.attr("width", width)
-		.attr("height", height)
-		.append("g")
-		//.attr("transform", "translate(700," + 2*margin.top + ")");
-		.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE + ", 700," + 2*margin.top + ")");*/
 	
+	d3.select("#aggregateView").remove();
 	STUDENT_LIST_HOLDER = d3.select("body").append("div")
 			.attr("class", "horizontalContainer")
 			.attr("id", "aggregateView")
@@ -647,11 +738,9 @@ function drawStudentList(){
 			.attr("width", 1000)
 			.attr("height", 1000)
 			.append("g")
-			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
 			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");
 	
 	if (CURRENT_VIEW != "aggregate") {
-		//STUDENT_LIST_HOLDER.style("visibility", "hidden")
 		d3.select("#aggregateView").style("opacity", "0");
 	}
 
@@ -851,16 +940,23 @@ var TREE_LINKS;
 function drawTree(){ //aka update tree; remember animations for shrinking and growing and moving nodes
 
 	//var margin = {top: 100, right: 0, bottom: 100, left: 0};
-
+	
+	d3.select("#conceptView").remove();
 	TREE_HOLDER = d3.select("body").append("div")
 			.attr("class", "verticalContainer")
 			.attr("id", "conceptView")
+			.style("opacity",0)
 			.append("svg")
 			.attr("width", 1000)
 			.attr("height", 1000)
 			.append("g")
 			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
 			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");
+	
+	d3.select("#conceptView")
+		.transition()
+		.style("opacity",1)
+		.duration(500);
 
 	/*var size= [width, height];
 
@@ -1032,6 +1128,18 @@ function connector(d, i){
 		 
 </script>
 <button id="play">Play</button>
-<button id="switchViewsButton">View Aggregate Visualization</button>
+<button id="switchViewsButton" onclick="switchViews()">View Aggregate Visualization</button>
+<select id="switchSessionsSelector" onchange="switchSessions()">
+	<option value="1">Class 1</option>
+	<option value="2">Class 2</option>
+	<option value="3">Class 3</option>
+	<option value="4">Class 4</option>
+	<option value="5">Class 5</option>
+	<option value="6">Class 6</option>
+	<option value="7">Class 7</option>
+	<option value="8">Class 8</option>
+	<option value="9">Class 9</option>
+	<option value="10">Class 10</option>
+</select>
 </body>
 </html>
