@@ -252,6 +252,7 @@ var CONCEPTS = [];
 var BY_CONCEPT = {}; //for the more realtime version
 var LESSON_TITLE;
 var SVG;
+var CURRENT_STUDENT_STATUS = {};
 
 var CLASS_START = null; //slider start. Assuming that all classes happen in the same calendar day
 var CLASS_END = null; //slider end
@@ -327,6 +328,7 @@ function initialize(file_name) {
 	CLASS_END = null;
 	TICK_VALUES = [];
 	TIME_TICK_VALUES = [];
+	CURRENT_STUDENT_STATUS = {};
 	
 	
 	SVG = d3.select("body").append("svg")
@@ -416,10 +418,12 @@ function reshapeStudentData(){
             }
             
         }
+        CURRENT_STUDENT_STATUS[student] = {concept: "none", changed: false};
     }
 
 	// re-order concepts 
 	CONCEPTS.sort()
+	
     var tstart = Math.floor(new Date(CLASS_START).getTime() / 1000);
     var  tend = Math.floor(new Date(CLASS_END).getTime() / 1000);
     var step = (tend - tstart)/timesteps;
@@ -596,9 +600,6 @@ function refreshView(data_file_name) {
 		playTimeline();
 	});
 }
-
-
-
 /*************************
 Timeline Things
 *************************/
@@ -608,7 +609,6 @@ function initPlayButton(){
 }
 function resetTimeline(){
 	SLIDER.interrupt();
-	document.getElementById("play").textContent = "Play"; //?? d3.select("#play").textContent or PLAY_BUTTON.textContent don't work whyyy
     SLIDER
     	.call(BRUSH.extent([CURRENT_VALUE = CLASS_START, CURRENT_VALUE]))
     	.call(BRUSH.event)
@@ -627,7 +627,7 @@ function playTimeline() {
     TARGET_VALUE = CLASS_END;
 
     SLIDER.transition()
-        .duration((TARGET_VALUE - CURRENT_VALUE) / (TARGET_VALUE - CLASS_START) * 40000)
+        .duration((TARGET_VALUE - CURRENT_VALUE) / (TARGET_VALUE - CLASS_START) * 120000)
         .ease("linear")
         .call(BRUSH.extent([TARGET_VALUE, TARGET_VALUE]))
         .call(BRUSH.event);
@@ -725,6 +725,7 @@ function drawTimeline()
 
 	  if (d3.event.sourceEvent) { // not a programmatic event
 	  		if(d3.event.sourceEvent.target.parentNode){
+	  		console.log("click")
 		TARGET_VALUE = CURRENT_VALUE = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
 		PLAY_BUTTON.text("Play");
 		BRUSH.extent([CURRENT_VALUE, CURRENT_VALUE]);
@@ -770,23 +771,19 @@ function drawStudentList(){
 		d3.select("#aggregateView").style("opacity", "0");
 	}
 
+	var titleHolder = STUDENT_LIST_HOLDER.append("text")
+			.attr("class", "visualizationTitle")
+	    	.attr("x", 315)
+		  	.attr("y", 5)
+			.attr("text-anchor", "middle")
+	    	.text(LESSON_TITLE);
+	
 	updateStudentList();
 }
 
 var CURRENT_SELECTION = null; //currently selected student
 
 function updateStudentList(){	
-
-	// Add a title at the top, only if it hasn't been added yet
-	vizTitle = STUDENT_LIST_HOLDER.selectAll(".visualizationTitle")
-	if (vizTitle[0].length == 0) {
-		var titleHolder = STUDENT_LIST_HOLDER.append("text")
-			.attr("class", "visualizationTitle")
-	    	.attr("x", 315)
-		  	.attr("y", 5)
-			.attr("text-anchor", "middle")
-	    	.text(LESSON_TITLE);
-	}
 	
 	STUDENT_LIST_HOLDER.selectAll(".studentHolder").remove();
 
@@ -1047,39 +1044,234 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 		.style("opacity",1)
 		.duration(500);
 
-	/*var size= [width, height];
-
-    // Compute the layout.
-    TREE_MAIN = d3.layout.tree().size(size),
-        TREE_NODES = TREE_MAIN.nodes(CONCEPTS_JSON),
-        TREE_LINKS = TREE_MAIN.links(TREE_NODES);
-    
-    console.log(BRUSH.extent()[0]);*/
-    updateTree();
-	
-}
-function updateTree(){
-    //which students are at which node?
-    
-    // Create the link lines.
-    /*TREE_HOLDER.selectAll(".link")
-        .data(TREE_LINKS)
-		.enter()
-		.append("path")
-        .attr("class", "link")
-        .attr("d", connector);*/
-
-	// Add a title at the top, only if it hasn't been added yet
-	vizTitle = TREE_HOLDER.selectAll(".visualizationTitle")
-	if (vizTitle[0].length == 0) {
 		var titleHolder = TREE_HOLDER.append("text")
 			.attr("class", "visualizationTitle")
 	    	.attr("x", 213)
 		  	.attr("y", 5)
 			.attr("text-anchor", "middle")
 	    	.text(LESSON_TITLE);
-	}
+	    	
+    updateTree();
 	
+}
+
+function studentRemoveTransition(){
+	  this.transition()
+	  .style("opacity",0)
+	  .duration(200)
+	  .remove();
+
+}
+
+function studentEnterTransition(){
+	  this.transition()
+	  .style("opacity",1)
+	  .duration(200);
+}
+
+function updateTree(){
+	//TODO separate this so that the text can get appended too...
+	var nodes = TREE_HOLDER.selectAll(".node")
+        .data(CONCEPTS);
+
+		nodes.enter().append("g") //height and y set later
+			.attr("class", "node")
+            .append("rect")
+            .attr("class", "nodeVisual")
+			.attr("width", nodeWidth)
+			.attr("x", function(d){  return 100;})
+
+		var prevY = 50;
+        nodes.each(function(d, i){
+        
+            var j = 0.5;
+            
+            //removing old elements         
+         d3.select(this).selectAll(".conceptTitle").remove();
+                    
+	        //name of state - technically doesn't need to be recreated each time...
+	        d3.select(this).append("text")
+	        	.attr("class", "conceptTitle")
+	        	.attr("x", function(){  return 0;})
+			  	.attr("y", function(){  return prevY;})
+	        	.text(function(label){					
+					if (label.indexOf("e") != -1) {
+						index = label.indexOf("e")
+						concept = label.slice(0,index);
+						problem = "Exercise " + label.slice(index+1);
+					}
+					if (label.indexOf("w") != -1) {
+						index = label.indexOf("w")
+						concept = label.slice(0,index);
+						problem = "Workbook " + label.slice(index+1);
+					}
+					concept = concept.charAt(0).toUpperCase() + concept.charAt(1).toUpperCase() + concept.slice(2);
+					
+					if (problem.indexOf("p") != -1) {
+						index = problem.indexOf("p")
+						problem = problem.slice(0,index) + " Part " + problem.slice(index+1);
+					}
+					
+					return concept + " " + problem;
+				});
+            
+            for(student in BY_CONCEPT[d]){
+                if( BRUSH.extent()[0] >= BY_CONCEPT[d][student].start &&
+                    BRUSH.extent()[0] <= BY_CONCEPT[d][student].end){
+                    CURRENT_STUDENT_STATUS[student].changed = true;
+                    var grp;
+                    
+                    //calculating bg width and color
+                    var numShown = 0;
+                    var numCorrect = 0;
+                    for(var x = 0; x < BY_CONCEPT[d][student].problems.length; x++){
+                        if(new Date(BY_CONCEPT[d][student].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
+                        	numShown++;
+                        	if(BY_CONCEPT[d][student].problems[x].correctness == "correct")
+                        		numCorrect++;
+                        }
+                    }
+                    
+                    if(CURRENT_STUDENT_STATUS[student].concept != d){ //delete old holder and recreate new holder
+                    	
+                    	d3.select("#S" + student)
+                    			.call(studentRemoveTransition);
+						CURRENT_STUDENT_STATUS[student].concept = d;
+						
+                    	grp = d3.select(this).append("g")
+                    			.data(d)
+                        grp.attr("class", "studentHolder")
+                                .attr("id", "S" + student)
+                                .attr("transform", "translate(0," + j * 5 + ")")
+                                .style("opacity", 0)
+                                .call(studentEnterTransition);
+									
+					   grp.append("rect")
+						   .attr("width", function(){
+							   return 110 + markerWidth*numShown + "px";
+						   })
+						   .attr("height", "20px")
+						   .attr("x", function(){  return 5;})
+						   .attr("y", function(){  return prevY + (lineHeight*j);})
+						   .attr("class", "student_bg")
+						   .attr("fill", function(){
+						   return CORRECTNESS_REDGREEN(numCorrect/numShown);
+					   });
+					   
+					     //student name
+                     	grp.append("text")
+                     		.attr("class", "student_name")
+                            .attr("x", function(){  return 5;})
+                            .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
+                            .text(function(){return BY_CONCEPT[d][student].name;});      
+                    }
+                    else //update current holder
+                    {
+                    	grp = d3.select(this).select("#S" + student)
+                    		.attr("transform", "translate(0," + j * 5 + ")");
+						grp.select("rect")
+							.attr("width", function(){
+								return 110 + markerWidth*numShown + "px";
+							})
+							.attr("height", "20px")
+							.attr("x", function(){  return 5;})
+							.attr("y", function(){  return prevY + (lineHeight*j);})
+							.attr("class", "student_bg")
+							.attr("fill", function(){
+							return CORRECTNESS_REDGREEN(numCorrect/numShown);
+						});
+						
+						grp.select(".student_name")
+                            .attr("x", function(){  return 5;})
+                            .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
+                    }
+                    
+                    grp.selectAll(".marker").remove();
+                    var markers = grp.selectAll("path")
+                            .data(BY_CONCEPT[d][student].problems);
+                    
+                    //markers for correct/incorrect problems
+                    markers.enter().append("path")
+                    		.attr("class", "marker")
+                    		.attr("width", markerWidth)
+                    		.attr("transform", function(d, i){ return "translate(" + (100 + (markerWidth * i)) + "," + 
+                    				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";})
+                            //.attr("x", function(d, i){  return 200 + (markerWidth * i);})
+                            //.attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
+                            .attr("d", function(d){
+                                if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
+                                    if(d.correctness == "correct"){
+                                        d3.select(this).attr("class", "marker correct");
+                                        return check_mark;
+                                    }
+                                    else{
+                                   		 d3.select(this).attr("class", "marker incorrect");
+                                        return x_mark;
+                                    }
+                                }
+                                else{
+                                    this.remove();
+                                    return "";
+                                }
+                            });                    
+                    markers.exit().remove();             
+                    j++;
+                 }
+            }
+            
+            //position and size containing rect appropriately
+            d3.select(this).select(".nodeVisual")
+            	.attr("height", 25*j)
+            	.attr("y", function(d, i){  return prevY;});
+            prevY = prevY + 25*(j) + 35;           
+            
+        });
+        
+        for(student in CURRENT_STUDENT_STATUS){
+        	if(CURRENT_STUDENT_STATUS[student].changed == false){
+        		d3.select("#S" + student).call(studentRemoveTransition);
+        	}
+        	else{
+        		CURRENT_STUDENT_STATUS[student].changed = false;
+        	}
+        }
+        nodes.exit().remove();
+}
+
+function drawTree(){ //aka update tree; remember animations for shrinking and growing and moving nodes
+
+	//var margin = {top: 100, right: 0, bottom: 100, left: 0};
+	
+	d3.select("#conceptView").remove();
+	TREE_HOLDER = d3.select("body").append("div")
+			.attr("class", "verticalContainer")
+			.attr("id", "conceptView")
+			.style("opacity",0)
+			.append("svg")
+			.attr("width", 1000)
+			.attr("height", 1000)
+			.append("g")
+			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
+			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");
+	
+	d3.select("#conceptView")
+		.transition()
+		.style("opacity",1)
+		.duration(500);
+
+		var titleHolder = TREE_HOLDER.append("text")
+			.attr("class", "visualizationTitle")
+	    	.attr("x", 213)
+		  	.attr("y", 5)
+			.attr("text-anchor", "middle")
+	    	.text(LESSON_TITLE);
+	    	
+    updateTree();
+	
+}
+
+/*
+function updateTree(){
 	//TODO separate this so that the text can get appended too...
 	var nodes = TREE_HOLDER.selectAll(".node")
         .data(CONCEPTS);
@@ -1097,9 +1289,9 @@ function updateTree(){
             var j = 0.5;
             
             //removing old elements
-            d3.select(this).selectAll(".studentHolder").remove(); 
-            d3.select(this).selectAll(".student_bg").remove();
-            d3.select(this).selectAll(".conceptTitle").remove();
+         d3.select(this).selectAll(".studentHolder").remove();
+         
+         d3.select(this).selectAll(".conceptTitle").remove();
                     
 	        //name of state
 	        d3.select(this).append("text")
@@ -1131,8 +1323,11 @@ function updateTree(){
                 if( BRUSH.extent()[0] > BY_CONCEPT[d][student].start &&
                     BRUSH.extent()[0] < BY_CONCEPT[d][student].end){
                     var grp = d3.select(this).append("g")
+                    			.data(d)
                                 .attr("class", "studentHolder")
+                                .attr("id", student)
                                 .attr("transform", "translate(0," + j * 5 + ")");
+
                     
                     //calculating bg width and color
                     var numShown = 0;
@@ -1203,10 +1398,12 @@ function updateTree(){
             prevY = prevY + 25*(j) + 35;           
             
         });
-        
+    
+    	//d3.select(this).selectAll(".studentHolder").remove(); 
+       
         
         nodes.exit().remove();
-}
+}*/
 
 function connector(d, i){
     return     "M" + 90 + "," + d.source.y
