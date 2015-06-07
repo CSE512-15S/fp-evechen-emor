@@ -633,8 +633,8 @@ function changeColorMode() {
 		CORRECTNESS_SCALE = CORRECTNESS_ORANGEBLUE;
 		ColorBlindViewOn = true;
 	}
-	drawStudentList();
-	drawTree();
+	updateStudentList();
+	updateTree();
 }
 
 
@@ -1210,7 +1210,7 @@ function updateTree(){
 						   .attr("y", function(){  return prevY + (lineHeight*j);})
 						   .attr("class", "student_bg")
 						   .attr("fill", function(){
-						   return CORRECTNESS_REDGREEN(numCorrect/numShown);
+						   return CORRECTNESS_SCALE(numCorrect/numShown);
 					   });
 					   
 					     //student name
@@ -1233,7 +1233,7 @@ function updateTree(){
 							.attr("y", function(){  return prevY + (lineHeight*j);})
 							.attr("class", "student_bg")
 							.attr("fill", function(){
-							return CORRECTNESS_REDGREEN(numCorrect/numShown);
+							return CORRECTNESS_SCALE(numCorrect/numShown);
 						});
 						
 						grp.select(".student_name")
