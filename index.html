@@ -160,9 +160,8 @@
 		   }
 		
 			#switchViewsButton {
-				 left: 800px;
-				 top: 160px;
-				 position: absolute;
+				 position:relative;
+				 left:110px;
 				 background: #004276;
 				 padding-right: 26px;
 				 border-radius: 2px;
@@ -177,9 +176,8 @@
 			}
 			
 			#switchSessionsSelector {
-				left: 800px;
-				top: 190px;
-				position: absolute;
+				position:relative;
+				left:110px;
 				background: #004276;
 				 padding-right: 26px;
 				 border-radius: 2px;
@@ -194,9 +192,8 @@
 			}
 			
 			#colorModeButton {
-				left: 800px;
-				 top: 220px;
-				 position: absolute;
+				position:relative;
+				 left:110px;
 				 background: #004276;
 				 padding-right: 26px;
 				 border-radius: 2px;
@@ -240,12 +237,12 @@
 			div{
 				font-family: Verdana, Sans-Serif;
 			}
-			#infobox{
+			.infobox{
 				font-size: 12px;
 				position: absolute;
 				left: 800px;
-				top: 60px;
-				width: 450px;
+				top: 5px;
+				width: 350px;
 				height: 100px;
 				text-align: justify;
 			}
@@ -382,16 +379,27 @@ function initialize(file_name) {
 		.attr("transform", "matrix(0.92,0,0,0.92,5,600) rotate(-90)");
 
 	//title
-	SVG.append("text")
+	/*SVG.append("text")
 		.attr("class", "title")
 		.attr("transform", "translate(153,25)")
-		.text("Visualizing Student Problem Solving in Real Time");
+		.text("Visualizing Student Problem Solving in Real Time");*/
 
 	//informational text
+	/*var conceptViewTitle = "Concept Visualization";
+	var conceptViewText = "<h3>Concept Visualization</h3><p>This visualization displays student data for the concept that the student is currently</p>";
+	
+	var oldText = "Insert informational stuff here. Visualizations designed for Chrome and best viewed on screen resolution >= 13inch Macbook. Blah blah blah blah more text goes here";
+	
 	d3.select("#infobox").remove();
 	d3.select("body").append("div")
 		.attr("id", "infobox")
-		.text("Insert informational stuff here. Visualizations designed for Chrome and best viewed on screen resolution >= 13inch Macbook. Blah blah blah blah more text goes here");
+		.html(conceptViewText);*/
+		
+		
+	
+	
+	
+	
 }
 
 
@@ -1313,15 +1321,43 @@ function connector(d, i){
 		 
 </script>
 <button id="play">Pause</button>
-<button id="switchViewsButton" onclick="switchViews()">Switch View</button>
-<select id="switchSessionsSelector" onchange="switchSessions()">
-	<option >
-	<option value="1" selected="selected">Class Session 1</option>
-	<option value="2">Class Session 2</option>
-	<option value="3">Class Session 3</option>
-	<option value="4">Class Session 4</option>
-	<option value="5">Class Session 5</option>
-</select>
-<button id="colorModeButton" onclick="changeColorMode()">Switch Colors</button>
+<div class="infobox" id="conceptInfo">
+	<p class="title">Concept Visualization</p>
+	<p>This visualization is designed to provide teachers with information to help them determine which students need assistance in the present moment. In the Enlearn adaptive curriculum, students work through multiple practice problems for each problem type until they have mastered the concept. This visualization displays problem-solving information for the concept that each student is currently working on. The check marks indicate correct responses and the X marks indicate incorrect responses. Teachers can rapidly determine which students are struggling by looking at the bar color, and know which material they need help with by looking at the concept label.</p>
+	<p>In addition to this concept-based visualization, we also created an aggregate visualization that shows student problem-solving data over the course of the class period. Click the button below to see the aggregate view:</p>
+	<button id="switchViewsButton" onclick="switchViews()">Switch View</button>
+	
+	<p>This visualization shows data from 6th grade students during a single class period. To view data from a different class period, select the desired session below:</p>
+	<select id="switchSessionsSelector" onchange="switchSessions()">
+		<option >
+		<option value="1" selected="selected">Class Session 1</option>
+		<option value="2">Class Session 2</option>
+		<option value="3">Class Session 3</option>
+		<option value="4">Class Session 4</option>
+		<option value="5">Class Session 5</option>
+	</select>
+	<p>We chose to use a green-red scale to encode problem correctness, since these colors are so commonly used in educational settings. To provide support for colorblind users, we also support a blue-red scale. Click the button below to change the color mode:</p>
+	<button id="colorModeButton" onclick="changeColorMode()">Switch Colors</button>
+</div>
+
+<div class="infobox" id="aggregateInfo">
+	<p class="title">Aggregate Visualization</p>
+	<p>This visualization is designed to provide teachers with information to help them determine which students need assistance in the present moment. In the Enlearn adaptive curriculum, students work through multiple practice problems for each problem type until they have mastered the concept. This visualization displays problem-solving information for the concept that each student is currently working on. The check marks indicate correct responses and the X marks indicate incorrect responses. Teachers can rapidly determine which students are struggling by looking at the bar color, and know which material they need help with by looking at the concept label.</p>
+	<p>In addition to this concept-based visualization, we also created an aggregate visualization that shows student problem-solving data over the course of the class period. Click the button below to see the aggregate view:</p>
+	<button id="switchViewsButton" onclick="switchViews()">Switch View</button>
+	
+	<p>This visualization shows data from 6th grade students during a single class period. To view data from a different class period, select the desired session below:</p>
+	<select id="switchSessionsSelector" onchange="switchSessions()">
+		<option >
+		<option value="1" selected="selected">Class Session 1</option>
+		<option value="2">Class Session 2</option>
+		<option value="3">Class Session 3</option>
+		<option value="4">Class Session 4</option>
+		<option value="5">Class Session 5</option>
+	</select>
+	<p>We chose to use a green-red scale to encode problem correctness, since these colors are so commonly used in educational settings. To provide support for colorblind users, we also support a blue-red scale. Click the button below to change the color mode:</p>
+	<button id="colorModeButton" onclick="changeColorMode()">Switch Colors</button>
+</div>
+
 </body>
 </html>
