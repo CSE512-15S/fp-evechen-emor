@@ -119,6 +119,10 @@
 		   		stroke-width: 1;
 		   		stroke: black;
 		   }
+		
+			.concept_name {
+				font-weight: bold;
+			}
 		   
 		   text{
 		   		font-family: Verdana, Sans-Serif;
@@ -229,10 +233,10 @@
 				height: 100px;
 				text-align: justify;
 			}
-			.horizontalContainer::-webkit-scrollbar,
+			/*.horizontalContainer::-webkit-scrollbar,
 			.verticalContainer::-webkit-scrollbar {
-				width: 0; /* May be Chrome only? */
-			}
+				width: 0; /* May be Chrome only? 
+			}*/
 		</style>
 		<link rel="stylesheet" href="d3.slider.css" />
 		<script src="d3.min.js"></script>
@@ -747,6 +751,12 @@ function drawStudentList(){
 	STUDENT_LIST_HOLDER = d3.select("body").append("div")
 			.attr("class", "horizontalContainer")
 			.attr("id", "aggregateView")
+			.on("click", function() { 
+				// if we currently have a student selected, deselect on click
+				if(CURRENT_SELECTION != null) {
+					studentClicked("deselect"); 
+				}  				
+  		 	})
 			.append("svg")
 			.attr("width", 1000)
 			.attr("height", 1000)
@@ -794,7 +804,7 @@ function updateStudentList(){
 			.attr("class", "overlay")
 			.style("visibility", "hidden");
              		  
-       	Object.keys(BY_STUDENT[student].concepts).forEach(function(concept){
+       	Object.keys(BY_STUDENT[student].concepts).sort().forEach(function(concept){
       		var numShownThisRound = 0;
          	var numCorrectThisRound = 0;
         	
@@ -829,7 +839,21 @@ function updateStudentList(){
 			}
 
 			if(BY_STUDENT[student].concepts[concept].problems.length > 0 && numShownThisRound > 0){ //how to only show concepts actually shown??
-                
+				
+				// calculate the position of the overlay. for the first 5 students, display the overlay underneith the bar
+				info_overlay_y = lineHeight*(j) - 6;
+				concept_name_translate_x = (nameWidth + (markerWidth * (conceptCount + numShown - 0.5 * numShownThisRound)));
+				concept_name_translate_y = (lineHeight*(j) - 6);
+				rotation = -60;
+				
+				top_students = ["Student 1","Student 2","Student 3","Student 4","Student 5"]
+				if (contains(top_students, BY_STUDENT[student].name)) {
+					info_overlay_y = lineHeight*(j+1);
+					concept_name_translate_x = (nameWidth + (markerWidth * (conceptCount + numShown - 0.5 * numShownThisRound)) - 10);
+					concept_name_translate_y = (lineHeight*(j+1) + 12);
+					rotation = 60;
+				}
+				
                 //bars for correctness per section - maybe creating it here is overkill and should be done upon clicking the student?
                 oneStudent.append("rect")
                 	.attr("class", "info_overlay")
@@ -838,7 +862,7 @@ function updateStudentList(){
 					})
 					.attr("height", "5px")
 					.attr("x", nameWidth + markerWidth * (conceptCount + numShown - numShownThisRound))
-					.attr("y", function(d){  return  lineHeight*(j) - 6})
+					.attr("y", info_overlay_y)
 					.style("visibility", "hidden")
 					.style("fill", function(d){
 						if(isNaN(numCorrectThisRound/numShownThisRound))
@@ -847,14 +871,13 @@ function updateStudentList(){
 							return CORRECTNESS_REDGREEN(numCorrectThisRound/numShownThisRound);
 		   			});
 		   		//similarly, label for the concept
-		   		oneStudent.append("text")
+		   		conceptLabel = oneStudent.append("text")
 		   			.attr("class", "concept_name info_overlay")
-		   			.attr("transform", "translate(" + (nameWidth + (markerWidth * (conceptCount + numShown - 0.5 * numShownThisRound))) + "," +
-		 				(lineHeight*(j) - 6) + "), rotate(-60)")
 		   			.style("visibility", "hidden")
-		   			.text(concept);
+					.attr("transform", "translate(" + concept_name_translate_x + "," + concept_name_translate_y + "), rotate(" + rotation + ")")
+					.text(formatConceptText(concept));
 		   		 
-		   			conceptCount++;
+		   		conceptCount++;
 		   	}
         });
 
@@ -887,6 +910,7 @@ function updateStudentList(){
 		   	})
 		   	.on("click", function(){ 
 		   		studentClicked(this);
+				d3.event.stopPropagation();
 		   	});
 		
 		overlay.attr("width", bg.attr("width"))
@@ -897,14 +921,63 @@ function updateStudentList(){
 				//just want to deselect everything. Note this is super hacky bc clicking "anywhere" will 
 				// not dismiss the selection, only on a student line
    				studentClicked("deselect"); 
-  		 	});;
+				d3.event.stopPropagation();
+  		 	});
 		j++;    
                     
 	});
 }
 
+function contains(array, obj) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function formatConceptText(conceptText) {
+	label = conceptText.charAt(0).toUpperCase() + conceptText.charAt(1).toUpperCase() + conceptText.slice(2);
+	
+	// If this lesson covers two sections of the curriculum, add the section name
+	if (LESSON_TITLE.indexOf("and") != -1) {
+		if (label.indexOf("e") != -1) {
+			index = label.indexOf("e");
+			label = label.slice(0,index) +" E" + label.slice(index+1);
+		}
+		if (label.indexOf("w") != -1) {
+			index = label.indexOf("w");
+			label = label.slice(0,index) +" W" + label.slice(index+1);
+		}
+
+		if (label.indexOf("p") != -1) {
+			index = label.indexOf("p");
+			label = label.slice(0,index) + " P" + label.slice(index+1);
+		}
+	}
+	// Otherwise, show just the exercise / workbook problem
+	else {
+		if (label.indexOf("e") != -1) {
+			index = label.indexOf("e");
+			label = "Exercise " + label.slice(index+1);
+		}
+		if (label.indexOf("w") != -1) {
+			index = label.indexOf("w");
+			label = "Workbook " + label.slice(index+1);
+		}
+		
+		if (label.indexOf("p") != -1) {
+			index = label.indexOf("p");
+			label = label.slice(0,index) + " Part " + label.slice(index+1);
+		}
+	}
+
+	return label;
+}
+
 function studentClicked(source){
-	//console.log("click!");
+	//console.log("click! source: " + source);
 	if(CURRENT_SELECTION == null && source != "deselect"){ //nothing currently selected
 		CURRENT_SELECTION = source.parentNode; //the student holder group
 		
