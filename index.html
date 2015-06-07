@@ -268,6 +268,7 @@ var CONCEPTS = [];
 var BY_CONCEPT = {}; //for the more realtime version
 var LESSON_TITLE;
 var SVG;
+var CURRENT_STUDENT_STATUS = {};
 
 var CLASS_START = null; //slider start. Assuming that all classes happen in the same calendar day
 var CLASS_END = null; //slider end
@@ -346,6 +347,7 @@ function initialize(file_name) {
 	CLASS_END = null;
 	TICK_VALUES = [];
 	TIME_TICK_VALUES = [];
+	CURRENT_STUDENT_STATUS = {};
 	
 	
 	SVG = d3.select("body").append("svg")
@@ -435,10 +437,12 @@ function reshapeStudentData(){
             }
             
         }
+        CURRENT_STUDENT_STATUS[student] = {concept: "none", changed: false};
     }
 
 	// re-order concepts 
 	CONCEPTS.sort()
+	
     var tstart = Math.floor(new Date(CLASS_START).getTime() / 1000);
     var  tend = Math.floor(new Date(CLASS_END).getTime() / 1000);
     var step = (tend - tstart)/timesteps;
@@ -644,7 +648,6 @@ function initPlayButton(){
 }
 function resetTimeline(){
 	SLIDER.interrupt();
-	document.getElementById("play").textContent = "Play"; //?? d3.select("#play").textContent or PLAY_BUTTON.textContent don't work whyyy
     SLIDER
     	.call(BRUSH.extent([CURRENT_VALUE = CLASS_START, CURRENT_VALUE]))
     	.call(BRUSH.event)
@@ -663,7 +666,7 @@ function playTimeline() {
     TARGET_VALUE = CLASS_END;
 
     SLIDER.transition()
-        .duration((TARGET_VALUE - CURRENT_VALUE) / (TARGET_VALUE - CLASS_START) * 40000)
+        .duration((TARGET_VALUE - CURRENT_VALUE) / (TARGET_VALUE - CLASS_START) * 120000)
         .ease("linear")
         .call(BRUSH.extent([TARGET_VALUE, TARGET_VALUE]))
         .call(BRUSH.event);
@@ -761,6 +764,7 @@ function drawTimeline()
 
 	  if (d3.event.sourceEvent) { // not a programmatic event
 	  		if(d3.event.sourceEvent.target.parentNode){
+	  		console.log("click")
 		TARGET_VALUE = CURRENT_VALUE = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
 		PLAY_BUTTON.text("Play");
 		BRUSH.extent([CURRENT_VALUE, CURRENT_VALUE]);
@@ -809,23 +813,19 @@ function drawStudentList(){
 		d3.select("#aggregateView").style("opacity", "0");
 	}
 
+	var titleHolder = STUDENT_LIST_HOLDER.append("text")
+			.attr("class", "visualizationTitle")
+	    	.attr("x", 315)
+		  	.attr("y", 5)
+			.attr("text-anchor", "middle")
+	    	.text(LESSON_TITLE);
+	
 	updateStudentList();
 }
 
 var CURRENT_SELECTION = null; //currently selected student
 
 function updateStudentList(){	
-
-	// Add a title at the top, only if it hasn't been added yet
-	vizTitle = STUDENT_LIST_HOLDER.selectAll(".visualizationTitle")
-	if (vizTitle[0].length == 0) {
-		var titleHolder = STUDENT_LIST_HOLDER.append("text")
-			.attr("class", "visualizationTitle")
-	    	.attr("x", 315)
-		  	.attr("y", 5)
-			.attr("text-anchor", "middle")
-	    	.text(LESSON_TITLE);
-	}
 	
 	STUDENT_LIST_HOLDER.selectAll(".studentHolder").remove();
 
@@ -1099,39 +1099,32 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 			.duration(500);
 	}
 
-	/*var size= [width, height];
-
-    // Compute the layout.
-    TREE_MAIN = d3.layout.tree().size(size),
-        TREE_NODES = TREE_MAIN.nodes(CONCEPTS_JSON),
-        TREE_LINKS = TREE_MAIN.links(TREE_NODES);
-    
-    console.log(BRUSH.extent()[0]);*/
-    updateTree();
-	
-}
-function updateTree(){
-    //which students are at which node?
-    
-    // Create the link lines.
-    /*TREE_HOLDER.selectAll(".link")
-        .data(TREE_LINKS)
-		.enter()
-		.append("path")
-        .attr("class", "link")
-        .attr("d", connector);*/
-
-	// Add a title at the top, only if it hasn't been added yet
-	vizTitle = TREE_HOLDER.selectAll(".visualizationTitle")
-	if (vizTitle[0].length == 0) {
 		var titleHolder = TREE_HOLDER.append("text")
 			.attr("class", "visualizationTitle")
 	    	.attr("x", 213)
 		  	.attr("y", 5)
 			.attr("text-anchor", "middle")
 	    	.text(LESSON_TITLE);
-	}
+	    	
+    updateTree();
 	
+}
+
+function studentRemoveTransition(){
+	  this.transition()
+	  .style("opacity",0)
+	  .duration(200)
+	  .remove();
+
+}
+
+function studentEnterTransition(){
+	  this.transition()
+	  .style("opacity",1)
+	  .duration(200);
+}
+
+function updateTree(){
 	//TODO separate this so that the text can get appended too...
 	var nodes = TREE_HOLDER.selectAll(".node")
         .data(CONCEPTS);
@@ -1148,12 +1141,10 @@ function updateTree(){
         
             var j = 0.5;
             
-            //removing old elements
-            d3.select(this).selectAll(".studentHolder").remove(); 
-            d3.select(this).selectAll(".student_bg").remove();
-            d3.select(this).selectAll(".conceptTitle").remove();
+            //removing old elements         
+         d3.select(this).selectAll(".conceptTitle").remove();
                     
-	        //name of state
+	        //name of state - technically doesn't need to be recreated each time...
 	        d3.select(this).append("text")
 	        	.attr("class", "conceptTitle")
 	        	.attr("x", function(){  return 0;})
@@ -1180,11 +1171,10 @@ function updateTree(){
 				});
             
             for(student in BY_CONCEPT[d]){
-                if( BRUSH.extent()[0] > BY_CONCEPT[d][student].start &&
-                    BRUSH.extent()[0] < BY_CONCEPT[d][student].end){
-                    var grp = d3.select(this).append("g")
-                                .attr("class", "studentHolder")
-                                .attr("transform", "translate(0," + j * 5 + ")");
+                if( BRUSH.extent()[0] >= BY_CONCEPT[d][student].start &&
+                    BRUSH.extent()[0] <= BY_CONCEPT[d][student].end){
+                    CURRENT_STUDENT_STATUS[student].changed = true;
+                    var grp;
                     
                     //calculating bg width and color
                     var numShown = 0;
@@ -1197,19 +1187,62 @@ function updateTree(){
                         }
                     }
                     
-                    grp.append("rect")
-                        .attr("width", function(){
-                        	return 110 + markerWidth*numShown + "px";
-                        })
-   						.attr("height", "20px")
-                        .attr("x", function(){  return 5;})
-                        .attr("y", function(){  return prevY + (lineHeight*j);})
-                    	.attr("class", "student_bg")
-					    .attr("fill", function(){
-						return CORRECTNESS_SCALE(numCorrect/numShown);
-					});
-					
-                    var markers = grp.selectAll("text")
+                    if(CURRENT_STUDENT_STATUS[student].concept != d){ //delete old holder and recreate new holder
+                    	
+                    	d3.select("#S" + student)
+                    			.call(studentRemoveTransition);
+						CURRENT_STUDENT_STATUS[student].concept = d;
+						
+                    	grp = d3.select(this).append("g")
+                    			.data(d)
+                        grp.attr("class", "studentHolder")
+                                .attr("id", "S" + student)
+                                .attr("transform", "translate(0," + j * 5 + ")")
+                                .style("opacity", 0)
+                                .call(studentEnterTransition);
+									
+					   grp.append("rect")
+						   .attr("width", function(){
+							   return 110 + markerWidth*numShown + "px";
+						   })
+						   .attr("height", "20px")
+						   .attr("x", function(){  return 5;})
+						   .attr("y", function(){  return prevY + (lineHeight*j);})
+						   .attr("class", "student_bg")
+						   .attr("fill", function(){
+						   return CORRECTNESS_REDGREEN(numCorrect/numShown);
+					   });
+					   
+					     //student name
+                     	grp.append("text")
+                     		.attr("class", "student_name")
+                            .attr("x", function(){  return 5;})
+                            .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
+                            .text(function(){return BY_CONCEPT[d][student].name;});      
+                    }
+                    else //update current holder
+                    {
+                    	grp = d3.select(this).select("#S" + student)
+                    		.attr("transform", "translate(0," + j * 5 + ")");
+						grp.select("rect")
+							.attr("width", function(){
+								return 110 + markerWidth*numShown + "px";
+							})
+							.attr("height", "20px")
+							.attr("x", function(){  return 5;})
+							.attr("y", function(){  return prevY + (lineHeight*j);})
+							.attr("class", "student_bg")
+							.attr("fill", function(){
+							return CORRECTNESS_REDGREEN(numCorrect/numShown);
+						});
+						
+						grp.select(".student_name")
+                            .attr("x", function(){  return 5;})
+                            .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
+                    }
+                    
+                    grp.selectAll(".marker").remove();
+                    var markers = grp.selectAll("path")
                             .data(BY_CONCEPT[d][student].problems);
                     
                     //markers for correct/incorrect problems
@@ -1236,14 +1269,7 @@ function updateTree(){
                                     return "";
                                 }
                             });                    
-                    markers.exit().remove();
-
-                    //student name
-                     grp.append("text")
-                     		.attr("class", "student_name")
-                            .attr("x", function(){  return 5;})
-                            .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
-                            .text(function(){return BY_CONCEPT[d][student].name;});                   
+                    markers.exit().remove();             
                     j++;
                  }
             }
@@ -1256,17 +1282,27 @@ function updateTree(){
             
         });
         
-        
+        for(student in CURRENT_STUDENT_STATUS){
+        	if(CURRENT_STUDENT_STATUS[student].changed == false){
+        		d3.select("#S" + student).call(studentRemoveTransition);
+        	}
+        	else{
+        		CURRENT_STUDENT_STATUS[student].changed = false;
+        	}
+        }
         nodes.exit().remove();
 
-		// dynamically update the width and height of the vertical container svg		
-		var conceptViewContent = d3.select("#conceptViewContent")
-		contentWidth = conceptViewContent.node().getBoundingClientRect().width + 20;
-		contentHeight = conceptViewContent.node().getBoundingClientRect().height;		
-		VERTICAL_CONTAINER_SVG
-			.attr("width", contentWidth)
-			.attr("height", contentHeight);
+	// dynamically update the width and height of the vertical container svg		
+	var conceptViewContent = d3.select("#conceptViewContent")
+	contentWidth = conceptViewContent.node().getBoundingClientRect().width + 20;
+	contentHeight = conceptViewContent.node().getBoundingClientRect().height;		
+	VERTICAL_CONTAINER_SVG
+		.attr("width", contentWidth)
+		.attr("height", contentHeight);
+
 }
+
+
 
 function connector(d, i){
     return     "M" + 90 + "," + d.source.y
