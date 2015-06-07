@@ -157,7 +157,7 @@
 		
 			#switchViewsButton {
 				 left: 800px;
-				 top: 150px;
+				 top: 120px;
 				 position: absolute;
 				 background: #004276;
 				 padding-right: 26px;
@@ -166,16 +166,27 @@
 				 color: white;
 				 margin: 0;
 				 padding: 0 12px;
-				 width: 160px;
+				 width: 120px;
 				 cursor: pointer;
-				 height: 40px;
+				 height: 20px;
 				 font: 13px sans-serif;
 			}
 			
 			#switchSessionsSelector {
 				left: 800px;
-				top: 200px;
+				top: 150px;
 				position: absolute;
+				background: #004276;
+				padding-right: 26px;
+				 border-radius: 2px;
+				 border: none;
+				 color: white;
+				 margin: 0;
+				 padding: 0 12px;
+				 width: 120px;
+				 cursor: pointer;
+				 height: 20px;
+				 font: 13px sans-serif;
 			}
 			
 			.verticalContainer{
@@ -221,7 +232,7 @@
 				width: 0; /* May be Chrome only? */
 			}*/
 		</style>
-		<link rel="stylesheet" href="d3.slider.css" />  
+		<link rel="stylesheet" href="d3.slider.css" />
 		<script src="d3.min.js"></script>
 	</head>
 <body>
@@ -1007,7 +1018,7 @@ function updateTree(){
         
             var j = 0.5;
             
-            //removing old elements - necessary?
+            //removing old elements
             d3.select(this).selectAll(".studentHolder").remove(); 
             d3.select(this).selectAll(".student_bg").remove();
             d3.select(this).selectAll(".conceptTitle").remove();
@@ -1128,7 +1139,7 @@ function connector(d, i){
 		 
 </script>
 <button id="play">Play</button>
-<button id="switchViewsButton" onclick="switchViews()">View Aggregate Visualization</button>
+<button id="switchViewsButton" onclick="switchViews()">Switch Views</button>
 <select id="switchSessionsSelector" onchange="switchSessions()">
 	<option value="1">Class 1</option>
 	<option value="2">Class 2</option>
