@@ -260,10 +260,11 @@ var SLIDER;
 var BRUSH;
 var TIME_SCALE;
 var TICK_VALUES = []; //all the ticks that show up on the time bar
-var TIME_TICK_VALUES = [];
+var TIME_TICK_VALUES;
 var timesteps = 8;
 var PLAY_BUTTON;
 var CURRENT_VALUE;
+var TARGET_VALUE;
 var TABLET;
 var SCALE = 0.7 //scale the 2 vis graphics down to fit on tablet screen and not look ridiculously large
 
@@ -306,7 +307,8 @@ d3.json("data_files/short_sessions/students_4.json", function(data){
 	drawTimeline();
 	initPlayButton();
 	drawStudentList();
-	drawTree();			
+	drawTree();		
+	playTimeline();	
 });
 
 
@@ -323,8 +325,8 @@ function initialize(file_name) {
 	BY_CONCEPT = {};
 	CLASS_START = null;
 	CLASS_END = null;
-	var TICK_VALUES = [];
-	var TIME_TICK_VALUES = [];
+	TICK_VALUES = [];
+	TIME_TICK_VALUES = [];
 	
 	
 	SVG = d3.select("body").append("svg")
@@ -418,7 +420,6 @@ function reshapeStudentData(){
 
 	// re-order concepts 
 	CONCEPTS.sort()
-	
     var tstart = Math.floor(new Date(CLASS_START).getTime() / 1000);
     var  tend = Math.floor(new Date(CLASS_END).getTime() / 1000);
     var step = (tend - tstart)/timesteps;
@@ -444,7 +445,7 @@ function switchViews() {
 		d3.select("#conceptView")
 			.transition()
 			.style("opacity",0)
-			.duration(500)
+			.duration(0)
 			.each("end", function() {
 				d3.select(this)
 					.transition()
@@ -453,7 +454,7 @@ function switchViews() {
 		d3.select("#verticalTablet")
 			.transition()
 			.style("opacity",0)
-			.duration(500)
+			.duration(100)
 			.each("end", function() {
 				d3.select(this)
 					.transition()
@@ -462,13 +463,13 @@ function switchViews() {
 		d3.select("#aggregateView")
 			.transition()
 			.style("opacity",1)
-			.delay(500)
-			.duration(500);
+			.delay(100)
+			.duration(200);
 		d3.select("#horizontalTablet")
 			.transition()
 			.style("opacity",1)
-			.delay(500)
-			.duration(500);
+			.delay(100)
+			.duration(200);
 
 		CURRENT_VIEW = "aggregate";
 	}
@@ -479,7 +480,7 @@ function switchViews() {
 		d3.select("#aggregateView")
 			.transition()
 			.style("opacity",0)
-			.duration(500)
+			.duration(0)
 			.each("end", function() {
 				d3.select(this)
 					.transition()
@@ -488,7 +489,7 @@ function switchViews() {
 		d3.select("#horizontalTablet")
 			.transition()
 			.style("opacity",0)
-			.duration(500)
+			.duration(100)
 			.each("end", function() {
 				d3.select(this)
 					.transition()
@@ -497,13 +498,13 @@ function switchViews() {
 		d3.select("#conceptView")
 			.transition()
 			.style("opacity",1)
-			.delay(500)
-			.duration(500);
+			.delay(100)
+			.duration(200);
 		d3.select("#verticalTablet")
 			.transition()
 			.style("opacity",1)
-			.delay(500)
-			.duration(500);
+			.delay(100)
+			.duration(200);
 
 		CURRENT_VIEW = "concept";
 	}
@@ -551,13 +552,13 @@ function switchSessions() {
 			data_file_name = "data_files/long_sessions/students_595.json";
 			break;
 	}
-	
+	//TODO not let data refresh 
 	// fade the visualization and timeline in and out to make the transition smoother
 	if (CURRENT_VIEW == "concept") {		
 		d3.select("#conceptView")
 			.transition()
 			.style("opacity",0)
-			.duration(500);
+			.duration(0);
 		d3.select("#verticalTablet")
 			.transition()
 			.style("opacity",0)
@@ -570,7 +571,7 @@ function switchSessions() {
 		d3.select("#aggregateView")
 			.transition()
 			.style("opacity",0)
-			.duration(500);
+			.duration(0);
 		d3.select("#horizontalTablet")
 			.transition()
 			.style("opacity",0)
@@ -580,6 +581,7 @@ function switchSessions() {
 			});
 		CURRENT_VIEW = "concept";
 	}
+	resetTimeline();
 }
 
 function refreshView(data_file_name) {
@@ -589,9 +591,9 @@ function refreshView(data_file_name) {
 		BY_STUDENT = data; 
 		reshapeStudentData();
 		drawTimeline();
-        initPlayButton();
 		drawStudentList();
 		drawTree();
+		playTimeline();
 	});
 }
 
@@ -602,8 +604,14 @@ Timeline Things
 *************************/
 function initPlayButton(){
 	PLAY_BUTTON = d3.select("#play")
-					.on("click", playTimeline);
-	
+					.on("click", playTimeline)	
+}
+function resetTimeline(){
+	SLIDER.interrupt();
+	document.getElementById("play").textContent = "Play"; //?? d3.select("#play").textContent or PLAY_BUTTON.textContent don't work whyyy
+    SLIDER
+    	.call(BRUSH.extent([CURRENT_VALUE = CLASS_START, CURRENT_VALUE]))
+    	.call(BRUSH.event)
 }
 
 function playTimeline() {
@@ -611,17 +619,17 @@ function playTimeline() {
     SLIDER.interrupt();
     this.textContent = "Play";
   } else {
-    if (CURRENT_VALUE === CLASS_END){ 
+    if (CURRENT_VALUE >= CLASS_END){ 
     	SLIDER
         .call(BRUSH.extent([CURRENT_VALUE = CLASS_START, CURRENT_VALUE]))
         .call(BRUSH.event);
 	}
-    targetValue = CLASS_END;
+    TARGET_VALUE = CLASS_END;
 
     SLIDER.transition()
-        .duration((targetValue - CURRENT_VALUE) / (targetValue - CLASS_START) * 40000)
+        .duration((TARGET_VALUE - CURRENT_VALUE) / (TARGET_VALUE - CLASS_START) * 40000)
         .ease("linear")
-        .call(BRUSH.extent([targetValue, targetValue]))
+        .call(BRUSH.extent([TARGET_VALUE, TARGET_VALUE]))
         .call(BRUSH.event);
 
     this.textContent = "Pause";
@@ -634,7 +642,7 @@ function drawTimeline()
 {
 	
 	//TODO remember to redraw this every time you switch class sections
-    var formatDate = d3.time.format("%X");
+    var formatDate = d3.time.format("%-I:%M");
 	var margin = {top: 200, right: 50, bottom: 200, left: 50},
 		width = 600,
 		height = 500 - margin.bottom - margin.top;
@@ -711,27 +719,22 @@ function drawTimeline()
 		.attr("transform", "translate(0," + height / 2 + ")")
 		.attr("r", 9);
 
-// slider
-// 		.call(brush.event)
-// 	  .transition() // gratuitous intro!
-// 		.duration(750)
-// 		.call(brush.extent([70, 70]))
-// 		.call(brush.event);
-	    CURRENT_VALUE = CLASS_END;
-	//what happens when you drag the slider?
+	TARGET_VALUE = CURRENT_VALUE = CLASS_END;
 	
 	function brushed() {
-	  CURRENT_VALUE = BRUSH.extent()[0];
 
 	  if (d3.event.sourceEvent) { // not a programmatic event
-		CURRENT_VALUE = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
+	  		if(d3.event.sourceEvent.target.parentNode){
+		TARGET_VALUE = CURRENT_VALUE = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
 		PLAY_BUTTON.text("Play");
 		BRUSH.extent([CURRENT_VALUE, CURRENT_VALUE]);
+		}
 	  }
 
 	  handle.attr("cx", TIME_SCALE(CURRENT_VALUE)); //location of center of handle
       updateTree();
       updateStudentList();
+		CURRENT_VALUE = BRUSH.extent()[0];
 	}
 }
 
