@@ -241,11 +241,20 @@
 				font-size: 12px;
 				position: absolute;
 				left: 800px;
-				top: 5px;
+				top: 25px;
+				width: 350px;
+				text-align: justify;
+			}
+			.infobox_bottom {
+				font-size: 12px;
+				position: absolute;
+				left: 800px;
+				top: 370px;
 				width: 350px;
 				height: 100px;
 				text-align: justify;
 			}
+			
 			/*.horizontalContainer::-webkit-scrollbar,
 			.verticalContainer::-webkit-scrollbar {
 				width: 0; /* May be Chrome only? 
@@ -379,10 +388,10 @@ function initialize(file_name) {
 		.attr("transform", "matrix(0.92,0,0,0.92,5,600) rotate(-90)");
 
 	//title
-	/*SVG.append("text")
+	SVG.append("text")
 		.attr("class", "title")
 		.attr("transform", "translate(153,25)")
-		.text("Visualizing Student Problem Solving in Real Time");*/
+		.text("Visualizing Student Problem Solving in Real Time");
 
 	//informational text
 	/*var conceptViewTitle = "Concept Visualization";
@@ -470,13 +479,14 @@ Switch View Button Things
 
 function switchViews() {
 	if (CURRENT_VIEW == "concept") {
-		d3.select("#aggregateView").style("visibility","visible");
-		d3.select("#horizontalTablet").style("visibility","visible");
 		
+		// update the visualization with animation
+		d3.select("#aggregateView").style("visibility","visible");
+		d3.select("#horizontalTablet").style("visibility","visible");		
 		d3.select("#conceptView")
 			.transition()
 			.style("opacity",0)
-			.duration(0)
+			.duration(200)
 			.each("end", function() {
 				d3.select(this)
 					.transition()
@@ -485,7 +495,7 @@ function switchViews() {
 		d3.select("#verticalTablet")
 			.transition()
 			.style("opacity",0)
-			.duration(100)
+			.duration(200)
 			.each("end", function() {
 				d3.select(this)
 					.transition()
@@ -494,24 +504,42 @@ function switchViews() {
 		d3.select("#aggregateView")
 			.transition()
 			.style("opacity",1)
-			.delay(100)
+			.delay(200)
 			.duration(200);
 		d3.select("#horizontalTablet")
 			.transition()
 			.style("opacity",1)
-			.delay(100)
+			.delay(200)
+			.duration(200);
+		
+		// update the informational text with animation
+		d3.select("#aggregateInfo").style("visibility","visible");
+		d3.select("#conceptInfo")
+			.transition()
+			.style("opacity",0)
+			.duration(200)
+			.each("end", function() {
+				d3.select(this)
+					.transition()
+					.style("visibility","hidden")
+			});
+		d3.select("#aggregateInfo")
+			.transition()
+			.style("opacity",1)
+			.delay(200)
 			.duration(200);
 
 		CURRENT_VIEW = "aggregate";
 	}
 	else if (CURRENT_VIEW == "aggregate") {
+		
+		// update the visualization with animation
 		d3.select("#conceptView").style("visibility","visible");
 		d3.select("#verticalTablet").style("visibility","visible");
-		
 		d3.select("#aggregateView")
 			.transition()
 			.style("opacity",0)
-			.duration(0)
+			.duration(200)
 			.each("end", function() {
 				d3.select(this)
 					.transition()
@@ -520,7 +548,7 @@ function switchViews() {
 		d3.select("#horizontalTablet")
 			.transition()
 			.style("opacity",0)
-			.duration(100)
+			.duration(200)
 			.each("end", function() {
 				d3.select(this)
 					.transition()
@@ -529,12 +557,30 @@ function switchViews() {
 		d3.select("#conceptView")
 			.transition()
 			.style("opacity",1)
-			.delay(100)
+			.delay(200)
 			.duration(200);
 		d3.select("#verticalTablet")
 			.transition()
 			.style("opacity",1)
-			.delay(100)
+			.delay(200)
+			.duration(200);
+			
+		
+		// update the informational text with animation
+		d3.select("#conceptInfo").style("visibility","visible");
+		d3.select("#aggregateInfo")
+			.transition()
+			.style("opacity",0)
+			.duration(200)
+			.each("end", function() {
+				d3.select(this)
+					.transition()
+					.style("visibility","hidden")
+			});
+		d3.select("#conceptInfo")
+			.transition()
+			.style("opacity",1)
+			.delay(200)
 			.duration(200);
 
 		CURRENT_VIEW = "concept";
@@ -589,11 +635,11 @@ function switchSessions() {
 		d3.select("#conceptView")
 			.transition()
 			.style("opacity",0)
-			.duration(0);
+			.duration(200);
 		d3.select("#verticalTablet")
 			.transition()
 			.style("opacity",0)
-			.duration(500)
+			.duration(200)
 			.each("end", function() {
 				refreshView(data_file_name);
 			});
@@ -602,14 +648,32 @@ function switchSessions() {
 		d3.select("#aggregateView")
 			.transition()
 			.style("opacity",0)
-			.duration(0);
+			.duration(200);
 		d3.select("#horizontalTablet")
 			.transition()
 			.style("opacity",0)
-			.duration(500)
+			.duration(200)
 			.each("end", function() {
 				refreshView(data_file_name);
 			});
+		
+		// update the informational text with animation
+		d3.select("#conceptInfo").style("visibility","visible");
+		d3.select("#aggregateInfo")
+			.transition()
+			.style("opacity",0)
+			.duration(200)
+			.each("end", function() {
+				d3.select(this)
+					.transition()
+					.style("visibility","hidden")
+			});
+		d3.select("#conceptInfo")
+			.transition()
+			.style("opacity",1)
+			.delay(200)
+			.duration(200);
+				
 		CURRENT_VIEW = "concept";
 	}
 	resetTimeline();
@@ -1198,7 +1262,7 @@ function updateTree(){
                         }
                     }
                     
-                    if(CURRENT_STUDENT_STATUS[student].concept != d || d3.select("#S" + student) == null){ //delete old holder and recreate new holder
+                    if(CURRENT_STUDENT_STATUS[student].concept != d){ //delete old holder and recreate new holder
                     	
                     	d3.select(".S" + student)
                     			.call(studentRemoveTransition);
@@ -1338,30 +1402,22 @@ function connector(d, i){
 }
 		 
 </script>
+
 <button id="play">Pause</button>
+
 <div class="infobox" id="conceptInfo">
 	<p class="title">Concept Visualization</p>
 	<p>This visualization is designed to provide teachers with information to help them determine which students need assistance in the present moment. In the Enlearn adaptive curriculum, students work through multiple practice problems for each problem type until they have mastered the concept. This visualization displays problem-solving information for the concept that each student is currently working on. The check marks indicate correct responses and the X marks indicate incorrect responses. Teachers can rapidly determine which students are struggling by looking at the bar color, and know which material they need help with by looking at the concept label.</p>
 	<p>In addition to this concept-based visualization, we also created an aggregate visualization that shows student problem-solving data over the course of the class period. Click the button below to see the aggregate view:</p>
-	<button id="switchViewsButton" onclick="switchViews()">Switch View</button>
-	
-	<p>This visualization shows data from 6th grade students during a single class period. To view data from a different class period, select the desired session below:</p>
-	<select id="switchSessionsSelector" onchange="switchSessions()">
-		<option >
-		<option value="1" selected="selected">Class Session 1</option>
-		<option value="2">Class Session 2</option>
-		<option value="3">Class Session 3</option>
-		<option value="4">Class Session 4</option>
-		<option value="5">Class Session 5</option>
-	</select>
-	<p>We chose to use a green-red scale to encode problem correctness, since these colors are so commonly used in educational settings. To provide support for colorblind users, we also support a blue-red scale. Click the button below to change the color mode:</p>
-	<button id="colorModeButton" onclick="changeColorMode()">Switch Colors</button>
 </div>
 
-<div class="infobox" id="aggregateInfo">
+<div class="infobox" id="aggregateInfo" style="visibility:hidden; opacity:0">
 	<p class="title">Aggregate Visualization</p>
-	<p>This visualization is designed to provide teachers with information to help them determine which students need assistance in the present moment. In the Enlearn adaptive curriculum, students work through multiple practice problems for each problem type until they have mastered the concept. This visualization displays problem-solving information for the concept that each student is currently working on. The check marks indicate correct responses and the X marks indicate incorrect responses. Teachers can rapidly determine which students are struggling by looking at the bar color, and know which material they need help with by looking at the concept label.</p>
-	<p>In addition to this concept-based visualization, we also created an aggregate visualization that shows student problem-solving data over the course of the class period. Click the button below to see the aggregate view:</p>
+	<p>This visualization is designed to provide teachers with aggregate information about student performance during the current class period. In this view, all problem-solving data for the class period up until the current time is displayed. Again, the check marks indicate correct responses and the X marks indicate incorrect responses. Spacing between marks indicates a change in concept. Teachers can determine how students have performed overall during this class period by looking at the bar color. For more information, the teacher can click on a student bar. This displays how the student has performed on each concept that has been covered during the current class period.</p>
+	<p>In addition to this aggregate visualization, we also created an concept-based visualization that shows data for the concept each student is currently working on. Click the button below to see the concept view:</p>
+</div>
+
+<div class="infobox_bottom">
 	<button id="switchViewsButton" onclick="switchViews()">Switch View</button>
 	
 	<p>This visualization shows data from 6th grade students during a single class period. To view data from a different class period, select the desired session below:</p>
@@ -1375,7 +1431,10 @@ function connector(d, i){
 	</select>
 	<p>We chose to use a green-red scale to encode problem correctness, since these colors are so commonly used in educational settings. To provide support for colorblind users, we also support a blue-red scale. Click the button below to change the color mode:</p>
 	<button id="colorModeButton" onclick="changeColorMode()">Switch Colors</button>
+	<p>For more information about our visualizations, contact Yvonne Chen at evechen[at]cs.washinton.edu and Nell O'Rourke at eorourke[at]cs.washington.edu</p>
 </div>
+
+
 
 </body>
 </html>
