@@ -764,11 +764,14 @@ function drawTimeline()
 
 	  if (d3.event.sourceEvent) { // not a programmatic event
 	  		if(d3.event.sourceEvent.target.parentNode){
-	  		console.log("click")
+	  		IS_DRAGGING = true;
 		TARGET_VALUE = CURRENT_VALUE = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
 		PLAY_BUTTON.text("Play");
 		BRUSH.extent([CURRENT_VALUE, CURRENT_VALUE]);
 		}
+	  }
+	  else{
+	  	IS_DRAGGING = false;
 	  }
 
 	  handle.attr("cx", TIME_SCALE(CURRENT_VALUE)); //location of center of handle
@@ -778,6 +781,7 @@ function drawTimeline()
 	}
 }
 
+var IS_DRAGGING = false;
 
 /********************************
 LIST VIEW - Alphabetical list of students - May be duplicating effort of some things done in other section, but will leave like this for now
@@ -1111,19 +1115,27 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 }
 
 function studentRemoveTransition(){
+	if(!IS_DRAGGING){
 	  this.transition()
 	  .style("opacity",0)
 	  .duration(200)
-	  .remove();
+	  }
+	  this.remove();
 
 }
 
 function studentEnterTransition(){
+	if(!IS_DRAGGING){
 	  this.transition()
 	  .style("opacity",1)
 	  .delay(200)
 	  .duration(200);
+	}
+	else{
+		this.style("opacity",1)
+	}
 }
+
 
 function updateTree(){
 	//TODO separate this so that the text can get appended too...
@@ -1171,7 +1183,6 @@ function updateTree(){
 					return concept + " " + problem;
 				});
             
-            console.log(BRUSH.extent()[0]);
             
             for(student in BY_CONCEPT[d]){
                 if( BRUSH.extent()[0] >= BY_CONCEPT[d][student].start &&
@@ -1190,9 +1201,9 @@ function updateTree(){
                         }
                     }
                     
-                    if(CURRENT_STUDENT_STATUS[student].concept != d || d3.select("#S" + student) == null){ //delete old holder and recreate new holder
+                    if(CURRENT_STUDENT_STATUS[student].concept != d){ //delete old holder and recreate new holder
                     	
-                    	d3.select(".S" + student)
+                    	d3.selectAll(".S" + student)
                     			.call(studentRemoveTransition);
 						CURRENT_STUDENT_STATUS[student].concept = d;
 						
@@ -1226,7 +1237,18 @@ function updateTree(){
                     {
                     	grp = d3.select(this).select(".S" + student)
                     		.attr("transform", "translate(0," + j * 5 + ")");
+						
 						grp.select("rect")
+							.call( function(){
+								if(!IS_DRAGGING){
+								   this.transition()
+							   		.attr("y", function(){  return prevY + (lineHeight*j);})
+							   		.duration(200);
+								}
+								else{
+									this.attr("y", function(){  return prevY + (lineHeight*j);});
+								}
+							})
 							.attr("width", function(){
 								return 110 + markerWidth*numShown + "px";
 							})
@@ -1236,15 +1258,21 @@ function updateTree(){
 							.attr("fill", function(){
 							return CORRECTNESS_SCALE(numCorrect/numShown);
 						})
-						.transition()
-							.attr("y", function(){  return prevY + (lineHeight*j);})
-							.duration(200);
+	
 						
 						grp.select(".student_name")
                             .attr("x", function(){  return 5;})
-                            .transition()
-                            	.attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
-                            	.duration(200)
+                            .call( function(){
+                            	if(!IS_DRAGGING){
+								   this.transition()
+								   .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
+								   .duration(200)
+                            	}
+                            	else{
+                            		this.attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));});
+                            	}
+
+                            });
                     }
                     
                    /* grp.selectAll(".marker")
@@ -1265,7 +1293,21 @@ function updateTree(){
                     				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";})
                             //.attr("x", function(d, i){  return 200 + (markerWidth * i);})
                             //.attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
-                            .attr("d", function(d){
+ 
+                    
+                    markers.call( function(){
+                   			if(!IS_DRAGGING){
+                   				 this.transition()
+                 				.attr("transform", function(d, i){ return "translate(" + (100 + (markerWidth * i)) + "," + 
+                    				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";})
+                    			.duration(200);
+                    		}
+                    		else{
+                    			this.attr("transform", function(d, i){ return "translate(" + (100 + (markerWidth * i)) + "," + 
+                    				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";});
+                    		}
+                    })
+                     .attr("d", function(d){
                                 if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
                                     if(d.correctness == "correct"){
                                         d3.select(this).attr("class", "marker correct");
@@ -1281,12 +1323,6 @@ function updateTree(){
                                     return "";
                                 }
                             });  
-                    
-                    markers.transition()
-                 				.attr("transform", function(d, i){ return "translate(" + (100 + (markerWidth * i)) + "," + 
-                    				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";})
-                    			.duration(200);
-                             
                     markers.exit().remove();             
                     j++;
                  }
@@ -1302,7 +1338,7 @@ function updateTree(){
         
         for(student in CURRENT_STUDENT_STATUS){
         	if(CURRENT_STUDENT_STATUS[student].changed == false){
-        		d3.select("#S" + student).call(studentRemoveTransition);
+        		d3.selectAll(".S" + student).call(studentRemoveTransition);
         	}
         	else{
         		CURRENT_STUDENT_STATUS[student].changed = false;
