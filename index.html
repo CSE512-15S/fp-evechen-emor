@@ -779,6 +779,7 @@ function drawTimeline()
 LIST VIEW - Alphabetical list of students - May be duplicating effort of some things done in other section, but will leave like this for now
 *********************************/
 var STUDENT_LIST_HOLDER;
+var HORIZONTAL_CONTAINER_SVG;
 
 function drawStudentList(){
 
@@ -787,7 +788,8 @@ function drawStudentList(){
 		height =  2000;
 	
 	d3.select("#aggregateView").remove();
-	STUDENT_LIST_HOLDER = d3.select("body").append("div")
+	
+	HORIZONTAL_CONTAINER_SVG = d3.select("body").append("div")
 			.attr("class", "horizontalContainer")
 			.attr("id", "aggregateView")
 			.on("click", function() { 
@@ -797,9 +799,10 @@ function drawStudentList(){
 				}  				
   		 	})
 			.append("svg")
-			.attr("width", 1000)
-			.attr("height", 1000)
+	
+	STUDENT_LIST_HOLDER = HORIZONTAL_CONTAINER_SVG
 			.append("g")
+			.attr("id", "aggregateViewContent")
 			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");
 	
 	if (CURRENT_VIEW != "aggregate") {
@@ -965,6 +968,14 @@ function updateStudentList(){
 		j++;    
                     
 	});
+	
+	// dynamically update the width and height of the vertical container svg		
+	var aggregateViewContent = d3.select("#aggregateViewContent")
+	contentWidth = aggregateViewContent.node().getBoundingClientRect().width + 20;
+	contentHeight = aggregateViewContent.node().getBoundingClientRect().height;		
+	HORIZONTAL_CONTAINER_SVG
+		.attr("width", contentWidth)
+		.attr("height", contentHeight);
 }
 
 function contains(array, obj) {
@@ -1061,22 +1072,25 @@ var TREE_HOLDER;
 var TREE_MAIN;
 var TREE_NODES;
 var TREE_LINKS;
+var VERTICAL_CONTAINER_SVG;
 
 function drawTree(){ //aka update tree; remember animations for shrinking and growing and moving nodes
 
 	//var margin = {top: 100, right: 0, bottom: 100, left: 0};
 	
 	d3.select("#conceptView").remove();
-	TREE_HOLDER = d3.select("body").append("div")
+	VERTICAL_CONTAINER_SVG = d3.select("body").append("div")
 			.attr("class", "verticalContainer")
 			.attr("id", "conceptView")
 			.style("opacity",0)
 			.append("svg")
-			.attr("width", 1000)
-			.attr("height", 1000)
+			
+	TREE_HOLDER = VERTICAL_CONTAINER_SVG			
 			.append("g")
+			.attr("id", "conceptViewContent")
 			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
 			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");
+	
 	
 	if (CURRENT_VIEW == "concept") {
 		d3.select("#conceptView")
@@ -1244,6 +1258,14 @@ function updateTree(){
         
         
         nodes.exit().remove();
+
+		// dynamically update the width and height of the vertical container svg		
+		var conceptViewContent = d3.select("#conceptViewContent")
+		contentWidth = conceptViewContent.node().getBoundingClientRect().width + 20;
+		contentHeight = conceptViewContent.node().getBoundingClientRect().height;		
+		VERTICAL_CONTAINER_SVG
+			.attr("width", contentWidth)
+			.attr("height", contentHeight);
 }
 
 function connector(d, i){
