@@ -87,18 +87,18 @@
 		   		stroke-linecap: null;
 		   		stroke-linejoin: null
 		   		stroke-width: 2;
-		   		stroke: #000000;		   
+		   		stroke: #333;		   
 		   }
 		   
 		   .correct.marker{
 		   		/*stroke: #7B7B7B;*/
 		   		stroke-width: 0;
-		   		fill: #000000;
+		   		fill: #777777;
 		   }
 		   
 		   .incorrect.marker{
 		   		stroke-width: 3;   
-		   		fill: #000000;
+		   		fill: #333;
 		   }
 		   
 		
@@ -154,16 +154,44 @@
 		   #g-play-button:active {
 			 background-color: #002657;
 		   }
+		
+			#switchViewsButton {
+				 left: 800px;
+				 top: 150px;
+				 position: absolute;
+				 background: #004276;
+				 padding-right: 26px;
+				 border-radius: 2px;
+				 border: none;
+				 color: white;
+				 margin: 0;
+				 padding: 0 12px;
+				 width: 160px;
+				 cursor: pointer;
+				 height: 40px;
+				 font: 13px sans-serif;
+			}
 			
-			.container{
+			.verticalContainer{
 				position: absolute;
 				overflow: scroll;
 				left: 244px;
 				top: 161px;
 				color: "blue";
 				background-color: "blue";
-				width: 314px;
+				width: 313px;
 				height: 452px;
+			}
+			
+			.horizontalContainer{
+				position: absolute;
+				overflow: scroll;
+				left: 183px;
+				top: 183px;
+				color: "blue";
+				background-color: "blue";
+				height: 314px;
+				width: 448px;
 			}
 			
 			.title{
@@ -217,13 +245,17 @@ var CURRENT_VALUE;
 var TABLET;
 var SCALE = 0.7 //scale the 2 vis graphics down to fit on tablet screen and not look ridiculously large
 
+var SWITCH_VIEWS_BUTTON;
+var CURRENT_VIEW = "concept";
+var SWITCH_SESSIONS_BUTTON;
+
 var mainWidth = 1200;
 	mainHeight = 655;
 	
 var lineHeight = 20; //height of each student line
 var conceptTitleHeight = 16; // height of the concept title	
 var markerWidth = 20; //width of each check/cross
-var nameWidth = 125;
+var nameWidth = 100;
 var CORRECTNESS_REDGREEN = d3.scale.quantize()
 		.domain([0, 1])
 		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b","#a6d96a","#66bd63"]);
@@ -249,7 +281,8 @@ d3.json("data_files/short_sessions/students_4.json", function(data){
 			BY_STUDENT = data; 
 			reshapeStudentData();
 			drawTimeline();
-            initPlayButton();	
+            initPlayButton();
+			initSwitchViewsButton();
 			drawStudentList();
 			drawTree();
 });
@@ -326,7 +359,21 @@ translate = 1 0 0 1 x y
 scale = x 0 0 y 0 0
 
 */
-TABLET = SVG.append("g").append("path").attr("d", tablet_path).attr("transform", "matrix(0.92,0,0,0.92,125,-15)");
+
+// Draw the vertical and horizontal tablets
+SVG.append("g")
+	.attr("id","verticalTablet")
+	.style("opacity",1)
+	.append("path")
+	.attr("d", tablet_path)
+	.attr("transform", "matrix(0.92,0,0,0.92,125,-15)");
+	
+SVG.append("g")
+	.attr("id","horizontalTablet")
+	.style("opacity",0)
+	.append("path")
+	.attr("d", tablet_path)
+	.attr("transform", "matrix(0.92,0,0,0.92,5,600) rotate(-90)");
 
 //title
 SVG.append("text")
@@ -338,6 +385,92 @@ SVG.append("text")
 d3.select("body").append("div")
 	.attr("class", "infobox")
 	.text("Insert informational stuff here. Visualizations designed for Chrome and best viewed on screen resolution >= 13inch Macbook. Blah blah blah blah more text goes here");
+
+/*************************
+Switch View Button Things
+*************************/
+
+function initSwitchViewsButton() {
+	SWITCH_VIEWS_BUTTON = d3.select("#switchViewsButton")
+							.on("click", switchViews);
+}
+
+function switchViews() {
+	if (CURRENT_VIEW == "concept") {
+		d3.select("#aggregateView").style("visibility","visible");
+		d3.select("#horizontalTablet").style("visibility","visible");
+		
+		d3.select("#conceptView")
+			.transition()
+			.style("opacity",0)
+			.duration(500)
+			.each("end", function() {
+				d3.select(this)
+					.transition()
+					.style("visibility","hidden")
+			});
+		d3.select("#verticalTablet")
+			.transition()
+			.style("opacity",0)
+			.duration(500)
+			.each("end", function() {
+				d3.select(this)
+					.transition()
+					.style("visibility","hidden")
+			});
+		d3.select("#aggregateView")
+			.transition()
+			.style("opacity",1)
+			.delay(500)
+			.duration(500);
+		d3.select("#horizontalTablet")
+			.transition()
+			.style("opacity",1)
+			.delay(500)
+			.duration(500);
+
+		CURRENT_VIEW = "aggregate";
+	}
+	else if (CURRENT_VIEW == "aggregate") {
+		d3.select("#conceptView").style("visibility","visible");
+		d3.select("#verticalTablet").style("visibility","visible");
+		
+		d3.select("#aggregateView")
+			.transition()
+			.style("opacity",0)
+			.duration(500)
+			.each("end", function() {
+				d3.select(this)
+					.transition()
+					.style("visibility","hidden")
+			});
+		d3.select("#horizontalTablet")
+			.transition()
+			.style("opacity",0)
+			.duration(500)
+			.each("end", function() {
+				d3.select(this)
+					.transition()
+					.style("visibility","hidden")
+			});
+		d3.select("#conceptView")
+			.transition()
+			.style("opacity",1)
+			.delay(500)
+			.duration(500);
+		d3.select("#verticalTablet")
+			.transition()
+			.style("opacity",1)
+			.delay(500)
+			.duration(500);
+
+		CURRENT_VIEW = "concept";
+	}
+}
+
+
+
+
 /*************************
 Timeline Things
 *************************/
@@ -459,6 +592,7 @@ function drawTimeline()
 // 		.call(brush.event);
 	    CURRENT_VALUE = CLASS_END;
 	//what happens when you drag the slider?
+	
 	function brushed() {
 	  CURRENT_VALUE = BRUSH.extent()[0];
 
@@ -473,6 +607,20 @@ function drawTimeline()
       updateStudentList();
 	}
 }
+
+function updateView() {
+	if (CURRENT_VIEW == "concept") {
+		updateTree();
+	}
+	else if (CURRENT_VIEW == "aggregate") {
+		updateStudentList();
+	}
+	else {
+		console.log("UNSUPPORTED VIEW!");
+	}
+}
+
+
 /********************************
 LIST VIEW - Alphabetical list of students - May be duplicating effort of some things done in other section, but will leave like this for now
 *********************************/
@@ -485,87 +633,100 @@ function drawStudentList(){
 		height =  2000;
 
 
-		STUDENT_LIST_HOLDER = SVG.append("g")
-			.attr("width", width)
-			.attr("height", height)
-			.append("g")
-			//.attr("transform", "translate(700," + 2*margin.top + ")");
-			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE + ", 700," + 2*margin.top + ")");
-
-	//Nell! Need something like below code chunk to get aggregate part to display properly on the tablet.
-	/*STUDENT_LIST_HOLDER = d3.select("body").append("div")
-				.attr("class", "container")
+	/*STUDENT_LIST_HOLDER = SVG.append("g")
+		.attr("width", width)
+		.attr("height", height)
+		.append("g")
+		//.attr("transform", "translate(700," + 2*margin.top + ")");
+		.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE + ", 700," + 2*margin.top + ")");*/
+	
+	STUDENT_LIST_HOLDER = d3.select("body").append("div")
+			.attr("class", "horizontalContainer")
+			.attr("id", "aggregateView")
 			.append("svg")
 			.attr("width", 1000)
 			.attr("height", 1000)
 			.append("g")
 			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
-			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");*/
-		
-		updateStudentList();
+			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");
+	
+	if (CURRENT_VIEW != "aggregate") {
+		//STUDENT_LIST_HOLDER.style("visibility", "hidden")
+		d3.select("#aggregateView").style("opacity", "0");
+	}
+
+	updateStudentList();
 }
 
 var CURRENT_SELECTION = null; //currently selected student
 
 function updateStudentList(){	
 
+	// Add a title at the top, only if it hasn't been added yet
+	vizTitle = STUDENT_LIST_HOLDER.selectAll(".visualizationTitle")
+	if (vizTitle[0].length == 0) {
+		var titleHolder = STUDENT_LIST_HOLDER.append("text")
+			.attr("class", "visualizationTitle")
+	    	.attr("x", 315)
+		  	.attr("y", 5)
+			.attr("text-anchor", "middle")
+	    	.text(LESSON_TITLE);
+	}
+	
 	STUDENT_LIST_HOLDER.selectAll(".studentHolder").remove();
 
-		var j = 0;
-        Object.keys(BY_STUDENT).forEach(function(student){
-        	var oneStudent = STUDENT_LIST_HOLDER.append("g")
-        	   .data(student) 
-			   .attr("class", "studentHolder")
-			   .attr("height", lineHeight)
-			   .attr("transform", "translate(0," + j * 3 + ")");
-			
-        	var numShown = 0;
-            var numCorrect = 0;
-            
-            var conceptCount = 0;
-            
-            var bg =  oneStudent.append("rect");
-            		  
-            var overlay = oneStudent.append("rect")
-            		  .attr("class", "overlay")
-            		  .style("visibility", "hidden");
-              		  
-        	 Object.keys(BY_STUDENT[student].concepts).forEach(function(concept){
-        	//for(var concept in BY_STUDENT[student].concepts){
-        		var numShownThisRound = 0;
-           		 var numCorrectThisRound = 0;
+	var j = 1;
+	Object.keys(BY_STUDENT).forEach(function(student) {
+       	var oneStudent = STUDENT_LIST_HOLDER.append("g")
+       	   .data(student) 
+		   .attr("class", "studentHolder")
+		   .attr("height", lineHeight)
+		   .attr("transform", "translate(0," + j * 5 + ")");
+		
+       	var numShown = 0;
+        var numCorrect = 0;            
+        var conceptCount = 0;            
+        var bg =  oneStudent.append("rect");
+        		  
+        var overlay = oneStudent.append("rect")
+			.attr("class", "overlay")
+			.style("visibility", "hidden");
+             		  
+       	Object.keys(BY_STUDENT[student].concepts).forEach(function(concept){
+      		var numShownThisRound = 0;
+         	var numCorrectThisRound = 0;
         	
-				for(var x = 0; x < BY_STUDENT[student].concepts[concept].problems.length; x++){
-                    
-                    //markers for correct/incorrect problems
-                    oneStudent.append("path")
-                            .attr("transform", "translate(" + (nameWidth + markerWidth * (numShown + conceptCount)) + ","
-                            	+ (lineHeight*(j)) + ")")
-                            .attr("width", markerWidth)
-                            .attr("height", markerWidth)
-                            .attr("class", "marker")
-                            .attr("d", function(d){
-                                if(new Date(BY_STUDENT[student].concepts[concept].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
-                                	numShown++;
-                                	numShownThisRound++;
-                                    if(BY_STUDENT[student].concepts[concept].problems[x].correctness == "correct"){
-                                    	numCorrect++;
-                                    	numCorrectThisRound++;
-                                        d3.select(this).attr("class", "marker correct");
-                                        return check_mark;
-                                    }
-                                    else{
-                                        d3.select(this).attr("class", "marker incorrect");
-                                        return x_mark;
-                                    }
-                                }
-                                else{
-                                    this.remove();
-                                    return "";
-                                }
-                            });                         
-                }
-                if(BY_STUDENT[student].concepts[concept].problems.length > 0 && numShownThisRound > 0){ //how to only show concepts actually shown??
+			for(var x = 0; x < BY_STUDENT[student].concepts[concept].problems.length; x++){
+				//markers for correct/incorrect problems
+	            oneStudent.append("path")
+					.attr("transform", "translate(" + (nameWidth + markerWidth * (numShown + conceptCount)) + ","
+						+ (lineHeight*(j) + 2) + ")")
+					.attr("width", markerWidth)
+					.attr("height", markerWidth)
+					.attr("class", "marker")
+					.attr("d", function(d){
+					    if(new Date(BY_STUDENT[student].concepts[concept].problems[x].timestamp*1000) <= BRUSH.extent()[0]){
+					    	numShown++;
+					    	numShownThisRound++;
+					        if(BY_STUDENT[student].concepts[concept].problems[x].correctness == "correct"){
+					        	numCorrect++;
+					        	numCorrectThisRound++;
+					            d3.select(this).attr("class", "marker correct");
+					            return check_mark;
+					        }
+					        else{
+					            d3.select(this).attr("class", "marker incorrect");
+					            return x_mark;
+					        }
+					    }
+					    else{
+					        this.remove();
+					        return "";
+					    }
+					});                         
+			}
+
+			if(BY_STUDENT[student].concepts[concept].problems.length > 0 && numShownThisRound > 0){ //how to only show concepts actually shown??
                 
                 //bars for correctness per section - maybe creating it here is overkill and should be done upon clicking the student?
                 oneStudent.append("rect")
@@ -586,25 +747,30 @@ function updateStudentList(){
 		   		//similarly, label for the concept
 		   		oneStudent.append("text")
 		   			.attr("class", "concept_name info_overlay")
-		   			.attr("transform", "translate(" + (nameWidth + (markerWidth * (conceptCount + numShown - 0.5 * numShownThisRound))) + "," + (lineHeight*(j) - 6) + "), rotate(-60)")
+		   			.attr("transform", "translate(" + (nameWidth + (markerWidth * (conceptCount + numShown - 0.5 * numShownThisRound))) + "," +
+		 				(lineHeight*(j) - 6) + "), rotate(-60)")
 		   			.style("visibility", "hidden")
 		   			.text(concept);
 		   		 
 		   			conceptCount++;
-		   		}
-        	});
+		   	}
+        });
 
 		
 		//student name
 		oneStudent.append("text")
-		   .attr("x", function(d){  return 0;})
+		   .attr("x", 3)
 		   .attr("class", "student_name")
 		   .attr("y", function(d){  return lineHeight*(j+1)-4;}) //the "-4" just shifts words up a bit; modify as necessary
 		   .text(function(){return BY_STUDENT[student].name;}); 
 		
 		//set up values for background rectangle
 		bg.attr("width", function(){
-				return nameWidth + markerWidth * (numShown + conceptCount -1);
+				addOn = 5;
+				if (numShown == 0) {
+					addOn = 20;
+				}
+				return nameWidth + markerWidth * (numShown + conceptCount -1) + addOn;
 			})
 			//.data(function(){return [{elem: bg, data: BY_STUDENT[student]}]})
 			.attr("height", "20px")
@@ -620,17 +786,19 @@ function updateStudentList(){
 		   	.on("click", function(){ 
 		   		studentClicked(this);
 		   	});
-		   	
-		   overlay.attr("width", bg.attr("width"))
-		   		  .attr("height", 20)
-		   		  .attr("x", 0)
-		   		  .attr("y", bg.attr("y"))
-		   		  .on("click", function(){ 
-		   				studentClicked("deselect"); //just want to deselect everything. Note this is super hacky bc clicking "anywhere" will not dismiss the selection, only on a student line
-		  		 	});;
+		
+		overlay.attr("width", bg.attr("width"))
+   		  .attr("height", 20)
+   		  .attr("x", 0)
+   		  .attr("y", bg.attr("y"))
+   		  .on("click", function(){ 
+				//just want to deselect everything. Note this is super hacky bc clicking "anywhere" will 
+				// not dismiss the selection, only on a student line
+   				studentClicked("deselect"); 
+  		 	});;
 		j++;    
                     
-        });
+	});
 }
 
 function studentClicked(source){
@@ -685,7 +853,8 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 	//var margin = {top: 100, right: 0, bottom: 100, left: 0};
 
 	TREE_HOLDER = d3.select("body").append("div")
-			.attr("class", "container")
+			.attr("class", "verticalContainer")
+			.attr("id", "conceptView")
 			.append("svg")
 			.attr("width", 1000)
 			.attr("height", 1000)
@@ -863,5 +1032,6 @@ function connector(d, i){
 		 
 </script>
 <button id="play">Play</button>
+<button id="switchViewsButton">View Aggregate Visualization</button>
 </body>
 </html>
