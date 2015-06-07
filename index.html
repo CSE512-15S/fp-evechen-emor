@@ -170,7 +170,7 @@
 				 color: white;
 				 margin: 0;
 				 padding: 0 12px;
-				 width: 120px;
+				 width: 130px;
 				 cursor: pointer;
 				 height: 20px;
 				 font: 13px sans-serif;
@@ -187,11 +187,27 @@
 				 color: white;
 				 margin: 0;
 				 padding: 0 12px;
-				 width: 120px;
+				 width: 130px;
+				 cursor: pointer;
+				 height: 20px;
+				 font: 13px sans-serif;				
+			}
+			
+			#colorModeButton {
+				left: 800px;
+				 top: 220px;
+				 position: absolute;
+				 background: #004276;
+				 padding-right: 26px;
+				 border-radius: 2px;
+				 border: none;
+				 color: white;
+				 margin: 0;
+				 padding: 0 12px;
+				 width: 130px;
 				 cursor: pointer;
 				 height: 20px;
 				 font: 13px sans-serif;
-				
 			}
 			
 			.verticalContainer{
@@ -286,6 +302,9 @@ var CORRECTNESS_REDGREEN = d3.scale.quantize()
 var CORRECTNESS_ORANGEBLUE = d3.scale.quantize()
 		.domain([0, 1])
 		.range(["#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#e0f3f8","#abd9e9","#74add1"]);
+
+var CORRECTNESS_SCALE = CORRECTNESS_REDGREEN;
+var ColorBlindViewOn = false;
 
 //SVG path data
 var check_mark = "m0,7.77042l2.04159,-2.0423l5.59291,5.59217l9.32318,-9.3203l2.04231,2.04089l-11.3655,11.36402 z";
@@ -597,6 +616,23 @@ function refreshView(data_file_name) {
 	});
 }
 
+/*************************
+Switch Color Button Things
+*************************/
+
+function changeColorMode() {
+	if (ColorBlindViewOn) {
+		CORRECTNESS_SCALE = CORRECTNESS_REDGREEN;
+		ColorBlindViewOn = false;
+	}
+	else {
+		CORRECTNESS_SCALE = CORRECTNESS_ORANGEBLUE;
+		ColorBlindViewOn = true;
+	}
+	drawStudentList();
+	drawTree();
+}
+
 
 
 /*************************
@@ -871,7 +907,7 @@ function updateStudentList(){
 						if(isNaN(numCorrectThisRound/numShownThisRound))
 							return "grey";
 						else
-							return CORRECTNESS_REDGREEN(numCorrectThisRound/numShownThisRound);
+							return CORRECTNESS_SCALE(numCorrectThisRound/numShownThisRound);
 		   			});
 		   		//similarly, label for the concept
 		   		conceptLabel = oneStudent.append("text")
@@ -909,7 +945,7 @@ function updateStudentList(){
 				if(isNaN(numCorrect/numShown))
 					return "grey";
 				else
-					return CORRECTNESS_REDGREEN(numCorrect/numShown);
+					return CORRECTNESS_SCALE(numCorrect/numShown);
 		   	})
 		   	.on("click", function(){ 
 		   		studentClicked(this);
@@ -1042,10 +1078,12 @@ function drawTree(){ //aka update tree; remember animations for shrinking and gr
 			//.attr("transform", "translate(" + margin.left + "," + 2*margin.top + ")");
 			.attr("transform", "matrix(" + SCALE + ", 0, 0," + SCALE +"," + 0 + "," + 10 + ")");
 	
-	d3.select("#conceptView")
-		.transition()
-		.style("opacity",1)
-		.duration(500);
+	if (CURRENT_VIEW == "concept") {
+		d3.select("#conceptView")
+			.transition()
+			.style("opacity",1)
+			.duration(500);
+	}
 
 	/*var size= [width, height];
 
@@ -1154,7 +1192,7 @@ function updateTree(){
                         .attr("y", function(){  return prevY + (lineHeight*j);})
                     	.attr("class", "student_bg")
 					    .attr("fill", function(){
-						return CORRECTNESS_REDGREEN(numCorrect/numShown);
+						return CORRECTNESS_SCALE(numCorrect/numShown);
 					});
 					
                     var markers = grp.selectAll("text")
@@ -1217,18 +1255,15 @@ function connector(d, i){
 		 
 </script>
 <button id="play">Pause</button>
-<button id="switchViewsButton" onclick="switchViews()">Switch Views</button>
+<button id="switchViewsButton" onclick="switchViews()">Switch View</button>
 <select id="switchSessionsSelector" onchange="switchSessions()">
-	<option value="1">Class 1</option>
-	<option value="2">Class 2</option>
-	<option value="3">Class 3</option>
-	<option value="4">Class 4</option>
-	<option value="5">Class 5</option>
-	<option value="6">Class 6</option>
-	<option value="7">Class 7</option>
-	<option value="8">Class 8</option>
-	<option value="9">Class 9</option>
-	<option value="10">Class 10</option>
+	<option >
+	<option value="1" selected="selected">Class Session 1</option>
+	<option value="2">Class Session 2</option>
+	<option value="3">Class Session 3</option>
+	<option value="4">Class Session 4</option>
+	<option value="5">Class Session 5</option>
 </select>
+<button id="colorModeButton" onclick="changeColorMode()">Switch Colors</button>
 </body>
 </html>
