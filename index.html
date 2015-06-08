@@ -829,7 +829,7 @@ function drawTimeline()
 				
 		}
 	   if (d3.event.sourceEvent) { // not a programmatic event
-		 console.log("click/drag");
+		 //("click/drag");
 			 IS_DRAGGING = true;
 			 TARGET_VALUE = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
 			 PLAY_BUTTON.text("Play");
@@ -998,7 +998,7 @@ function updateStudentList(){
 					            return check_mark;
 					        }
 					        else{
-					        	if(student == 354) console.log(this);
+					        	//if(student == 354) console.log(this);
 					            d3.select(this).attr("class", "marker incorrect");
 					            return x_mark;
 					        }
@@ -1297,7 +1297,7 @@ function updateTree(){
 		var prevY = 50;
         nodes.each(function(d, i){
         
-            var j = 0.5;
+        var j = 0.5;
             
             //removing old elements         
          d3.select(this).selectAll(".conceptTitle").remove();
@@ -1332,7 +1332,7 @@ function updateTree(){
             for(student in BY_CONCEPT[d]){
                 if( BRUSH.extent()[0] >= BY_CONCEPT[d][student].start &&
                     BRUSH.extent()[0] <= BY_CONCEPT[d][student].end){
-                    CURRENT_STUDENT_STATUS[student].changed = true;
+                    //CURRENT_STUDENT_STATUS[student].changed = true;
                     var grp;
                     
                     //calculating bg width and color
@@ -1345,9 +1345,19 @@ function updateTree(){
                         		numCorrect++;
                         }
                     }
+
+					if (d == "ns6-28w1" || d == "ns6-28w3") {
+						console.log("d: ",d," j: ",j," student: ",BY_CONCEPT[d][student].name);
+						console.log("CURRENT_STUDENT_STATUS[student].concept: ",CURRENT_STUDENT_STATUS[student].concept)
+						console.log("CURRENT_STUDENT_STATUS[student].changed: ",CURRENT_STUDENT_STATUS[student].changed)
+					}
                     
-                    if(CURRENT_STUDENT_STATUS[student].concept != d || d3.select(".S" + student).empty()){ //delete old holder and recreate new holder
-                    	
+					//delete old holder and recreate new holder
+                    if((CURRENT_STUDENT_STATUS[student].concept != d && CURRENT_STUDENT_STATUS[student].changed == false) || d3.select(".S" + student).empty()){ 
+                    	if (d == "ns6-28w1" || d == "ns6-28w3") {
+							console.log("in if with student: ",BY_CONCEPT[d][student].name);
+						}
+						
                     	d3.selectAll(".S" + student)
                     			.call(studentRemoveTransition);
 						CURRENT_STUDENT_STATUS[student].concept = d;
@@ -1380,12 +1390,17 @@ function updateTree(){
                     }
                     else //update current holder
                     {
+						if (d == "ns6-28w1" || d == "ns6-28w3") {
+							console.log("in else with student: ",BY_CONCEPT[d][student].name);
+						}
+	
                     	grp = d3.select(this).select(".S" + student)
                     		.attr("transform", "translate(0," + j * 5 + ")");
 						
 						grp.select("rect")
 							.call( function(){
-								if(!IS_DRAGGING){
+								//if(!IS_DRAGGING){
+								if (false) {
 								   this.transition()
 							   		.attr("y", function(){  return prevY + (lineHeight*j);})
 							   		.delay(200)
@@ -1407,7 +1422,8 @@ function updateTree(){
 						grp.select(".student_name")
                             .attr("x", function(){  return 5;})
                             .call( function(){
-                            	if(!IS_DRAGGING){
+                            	//if(!IS_DRAGGING){
+								if (false) {
 								   this.transition()
 								   .attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
 								   .delay(200)
@@ -1440,8 +1456,26 @@ function updateTree(){
                             //.attr("y", function(){  return prevY + conceptTitleHeight + ((lineHeight)*(j));})
  
                     
-                    markers.call( function(){
-                   			if(!IS_DRAGGING){
+                    markers
+						.attr("d", function(d){
+                            if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
+                                if(d.correctness == "correct"){
+                                    d3.select(this).attr("class", "marker correct");
+                                    return check_mark;
+                                }
+                                else{
+                               		 d3.select(this).attr("class", "marker incorrect");
+                                    return x_mark;
+                                }
+                            }
+                            else{
+                                this.remove();
+                                return "";
+                            }
+                        })
+						.call( function(){
+                   			//if(!IS_DRAGGING){
+							if (false) {
                    				 this.transition()
                  				.attr("transform", function(d, i){ return "translate(" + (100 + (markerWidth * i)) + "," + 
                     				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";})
@@ -1452,25 +1486,13 @@ function updateTree(){
                     			this.attr("transform", function(d, i){ return "translate(" + (100 + (markerWidth * i)) + "," + 
                     				(prevY + conceptTitleHeight + (lineHeight * j) - 15) + ")";});
                     		}
-                    })
-                     .attr("d", function(d){
-                                if(new Date(d.timestamp*1000) <= BRUSH.extent()[0]){
-                                    if(d.correctness == "correct"){
-                                        d3.select(this).attr("class", "marker correct");
-                                        return check_mark;
-                                    }
-                                    else{
-                                   		 d3.select(this).attr("class", "marker incorrect");
-                                        return x_mark;
-                                    }
-                                }
-                                else{
-                                    this.remove();
-                                    return "";
-                                }
-                            });  
-                    markers.exit().remove();             
-                    j++;
+                    	});  
+                    markers.exit().remove();
+         			if (CURRENT_STUDENT_STATUS[student].changed == false) {
+						j++;
+					}
+                    
+					CURRENT_STUDENT_STATUS[student].changed = true;
                  }
             }
             
@@ -1541,7 +1563,7 @@ function connector(d, i){
 	</select>
 	<p>We chose to use a green-red scale to encode problem correctness, since these colors are so commonly used in educational settings. To provide support for colorblind users, we also support a blue-red scale. Click the button below to change the color mode:</p>
 	<button id="colorModeButton" onclick="changeColorMode()">Switch Colors</button>
-	<p>For more information about our visualizations, contact Yvonne Chen at evechen[at]cs.washinton.edu and Nell O'Rourke at eorourke[at]cs.washington.edu</p>
+	<p>For more information about our visualizations, contact Yvonne Chen at evechen[at]cs.washington.edu and Nell O'Rourke at eorourke[at]cs.washington.edu</p>
 </div>
 
 
