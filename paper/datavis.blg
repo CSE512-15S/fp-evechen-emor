@@ -1,0 +1,77 @@
+This is BibTeX, Version 0.99d (TeX Live 2014)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: datavis.aux
+The style file: SIGCHI-Reference-Format.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: references.bib
+Warning--I didn't find a database entry for "something"
+Warning--I didn't find a database entry for "chinmay"
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--require articleno with numpages field in Agarwal2006
+Warning--empty publisher in Andersen13
+Warning--empty address in Andersen13
+Warning--require articleno with numpages field in Anderson2007
+Warning--require articleno with numpages field in Arnold2012
+Warning--require articleno with numpages field in Baker04
+Warning--require articleno with numpages field in Balaam2010
+Warning--require articleno with numpages field in Brooks14
+Warning--require articleno with numpages field in Coopey2013
+Warning--empty address in Gee03
+Warning--page numbers missing in both pages and numpages fields in Graesser2004
+Warning--require articleno with numpages field in Hickey2014
+Warning--require articleno with numpages field in Hill2005
+Warning--require articleno with numpages field in Kim2015
+Warning--require articleno with numpages field in Koile2006
+Warning--require articleno with numpages field in Kostadinova2012
+Warning--require articleno with numpages field in Kreitmayer2013
+Warning--require articleno with numpages field in Kulkarni2015
+Warning--require articleno with numpages field in Lazar2007
+Warning--empty institution in Murray15
+Warning--require articleno with numpages field in ORourke14b
+Warning--require articleno with numpages field in Pardos13
+Warning--require articleno with numpages field in Szafir2013
+Warning--require articleno with numpages field in Wentzel2002
+Warning--require articleno with numpages field in Wobbrock11
+You've used 48 entries,
+            5283 wiz_defined-function locations,
+            1625 strings with 25581 characters,
+and the built_in function-call counts, 54666 in all, are:
+= -- 7842
+> -- 1469
+< -- 2
++ -- 458
+- -- 1212
+* -- 3593
+:= -- 5421
+add.period$ -- 248
+call.type$ -- 48
+change.case$ -- 332
+chr.to.int$ -- 48
+cite$ -- 73
+duplicate$ -- 3889
+empty$ -- 2755
+format.name$ -- 618
+if$ -- 12904
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 168
+newline$ -- 456
+num.names$ -- 290
+pop$ -- 1351
+preamble$ -- 1
+purify$ -- 521
+quote$ -- 0
+skip$ -- 1055
+stack$ -- 0
+substring$ -- 6536
+swap$ -- 397
+text.length$ -- 1407
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 428
+warning$ -- 25
+while$ -- 333
+width$ -- 0
+write$ -- 785
+(There were 27 warnings)
