@@ -283,8 +283,10 @@ var MOVING;
 var SLIDER; 
 var BRUSH;
 var HANDLE;
+var TICKS;
 var TIME_SCALE;
 var TICK_VALUES = []; //all the ticks that show up on the time bar
+var TICK_NAMES = []; //student data to go alongside
 var TIME_TICK_VALUES;
 var timesteps = 8;
 var PLAY_BUTTON;
@@ -451,8 +453,8 @@ function reshapeStudentData(){
             BY_CONCEPT[group][student]["problems"] = probs;
             for(var x = 0; x < probs.length; x++){
             	var time = new Date(probs[x].timestamp*1000);
-            	if(TICK_VALUES.indexOf(time) == -1)
             		TICK_VALUES.push(time);
+            		TICK_NAMES.push(student);
             }
             
         }
@@ -782,6 +784,8 @@ function drawTimeline()
 	  .select(".domain")
 		.attr("class", "activity_bar");
 
+	TICKS = t.select(".activity").selectAll(".tick")
+			.data(TICK_NAMES);
 	
 	SLIDER = t.append("g")
 		.attr("class", "slider")
@@ -820,6 +824,10 @@ function drawTimeline()
 		CURRENT_VALUE = BRUSH.extent()[0];
 	}*/
 	function brushed() {
+		if(CURRENT_SELECTION != null){
+			studentClicked("deselect", "none"); 
+				
+		}
 	   if (d3.event.sourceEvent) { // not a programmatic event
 		 console.log("click/drag");
 			 IS_DRAGGING = true;
@@ -852,25 +860,29 @@ function resetTimeline(){
 }
 
 function playTimeline() {
-  if (SLIDER.node().__transition__) {
-    SLIDER.interrupt();
-    this.textContent = "Play";
-  } else {
-    if (CURRENT_VALUE >= CLASS_END){ 
-    	SLIDER
-        .call(BRUSH.extent([CURRENT_VALUE = CLASS_START, CURRENT_VALUE]))
-        .call(BRUSH.event);
+if(CURRENT_SELECTION == null){
+studentClicked("deselect", "none"); 
+				
+}
+	if (SLIDER.node().__transition__) {
+	  SLIDER.interrupt();
+	  this.textContent = "Play";
+	} else {
+	  if (CURRENT_VALUE >= CLASS_END){ 
+		  SLIDER
+		  .call(BRUSH.extent([CURRENT_VALUE = CLASS_START, CURRENT_VALUE]))
+		  .call(BRUSH.event);
+	  }
+	  TARGET_VALUE = CLASS_END;
+
+	  SLIDER.transition()
+		  .duration((TARGET_VALUE - CURRENT_VALUE) / (TARGET_VALUE - CLASS_START) * 120000)
+		  .ease("linear")
+		  .call(BRUSH.extent([TARGET_VALUE, TARGET_VALUE]))
+		  .call(BRUSH.event);
+
+	  this.textContent = "Pause";
 	}
-    TARGET_VALUE = CLASS_END;
-
-    SLIDER.transition()
-        .duration((TARGET_VALUE - CURRENT_VALUE) / (TARGET_VALUE - CLASS_START) * 120000)
-        .ease("linear")
-        .call(BRUSH.extent([TARGET_VALUE, TARGET_VALUE]))
-        .call(BRUSH.event);
-
-    this.textContent = "Pause";
-  }
 }
  
 function move(){
@@ -916,7 +928,7 @@ function drawStudentList(){
 			.on("click", function() { 
 				// if we currently have a student selected, deselect on click
 				if(CURRENT_SELECTION != null) {
-					studentClicked("deselect"); 
+					studentClicked("deselect", "none"); 
 				}  				
   		 	})
 			.append("svg")
@@ -986,6 +998,7 @@ function updateStudentList(){
 					            return check_mark;
 					        }
 					        else{
+					        	if(student == 354) console.log(this);
 					            d3.select(this).attr("class", "marker incorrect");
 					            return x_mark;
 					        }
@@ -997,8 +1010,8 @@ function updateStudentList(){
 					});                         
 			}
 
-			if(BY_STUDENT[student].concepts[concept].problems.length > 0 && numShownThisRound > 0){ //how to only show concepts actually shown??
-				
+			if(numShownThisRound > 0){ //how to only show concepts actually shown??
+					      
 				// calculate the position of the overlay. for the first 5 students, display the overlay underneith the bar
 				info_overlay_y = lineHeight*(j) - 6;
 				concept_name_translate_x = (nameWidth + (markerWidth * (conceptCount + numShown - 0.5 * numShownThisRound)));
@@ -1024,8 +1037,12 @@ function updateStudentList(){
 					.attr("y", info_overlay_y)
 					.style("visibility", "hidden")
 					.style("fill", function(d){
-						if(isNaN(numCorrectThisRound/numShownThisRound))
+	
+					
+						if(isNaN(numCorrectThisRound/numShownThisRound)){		
 							return "grey";
+							
+							}
 						else
 							return CORRECTNESS_SCALE(numCorrectThisRound/numShownThisRound);
 		   			});
@@ -1062,13 +1079,14 @@ function updateStudentList(){
 			.attr("y", function(){  return lineHeight*(j)})
 			.attr("class", "student_bg")
 			.style("fill", function(){
-				if(isNaN(numCorrect/numShown))
+				if(isNaN(numCorrect/numShown)){
 					return "grey";
+				}
 				else
 					return CORRECTNESS_SCALE(numCorrect/numShown);
 		   	})
 		   	.on("click", function(){ 
-		   		studentClicked(this);
+		   		studentClicked(this, student);
 				d3.event.stopPropagation();
 		   	});
 		
@@ -1079,7 +1097,7 @@ function updateStudentList(){
    		  .on("click", function(){ 
 				//just want to deselect everything. Note this is super hacky bc clicking "anywhere" will 
 				// not dismiss the selection, only on a student line
-   				studentClicked("deselect"); 
+   				studentClicked("deselect", "none"); 
 				d3.event.stopPropagation();
   		 	});
 		j++;    
@@ -1143,7 +1161,7 @@ function formatConceptText(conceptText) {
 	return label;
 }
 
-function studentClicked(source){
+function studentClicked(source, name){
 	//console.log("click! source: " + source);
 	if(CURRENT_SELECTION == null && source != "deselect"){ //nothing currently selected
 		CURRENT_SELECTION = source.parentNode; //the student holder group
@@ -1161,6 +1179,13 @@ function studentClicked(source){
 		d3.select(CURRENT_SELECTION).selectAll(".info_overlay").style("visibility", "visible");	
 		d3.select(CURRENT_SELECTION).selectAll("path").style("opacity", 1);
 	
+		/*TICKS.each(function(d, i){
+			if(TICK_NAMES[i] == name)
+				d3.select(this).attr("stroke", "#000");
+				else
+				d3.select(this).style("opacity", "0");
+
+		})*/
 	}
 	else { //deselect everything if something is selected, unless you tapped on the current selection
 		STUDENT_LIST_HOLDER.selectAll(".student_bg").attr("class", "student_bg").style("visibility", "visible");
@@ -1169,6 +1194,11 @@ function studentClicked(source){
 		STUDENT_LIST_HOLDER.selectAll(".info_overlay").style("visibility", "hidden");	
 		STUDENT_LIST_HOLDER.selectAll("path").style("opacity", 1);
 		CURRENT_SELECTION = null;
+		
+		/*TICKS.each(function(d){
+				d3.select(this).attr("stroke", "#999999")
+							.style("opacity", "1");
+		})*/
 	}
 }
 /********************************
