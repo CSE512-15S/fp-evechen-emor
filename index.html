@@ -279,6 +279,7 @@ var CURRENT_STUDENT_STATUS = {};
 var CLASS_START = null; //slider start. Assuming that all classes happen in the same calendar day
 var CLASS_END = null; //slider end
 
+var MOVING;
 var SLIDER; 
 var BRUSH;
 var TIME_SCALE;
@@ -835,22 +836,43 @@ function drawTimeline()
 	function brushed() {
 
 	  if (d3.event.sourceEvent) { // not a programmatic event
-	  		if(d3.event.sourceEvent.target.parentNode){
+	  	console.log("click/drag");
 	  		IS_DRAGGING = true;
-		TARGET_VALUE = CURRENT_VALUE = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
-		PLAY_BUTTON.text("Play");
-		BRUSH.extent([CURRENT_VALUE, CURRENT_VALUE]);
-		}
+			TARGET_VALUE = CURRENT_VALUE = TIME_SCALE.invert(d3.mouse(this)[0]); //invert maps mouse coordinate (y) back to slider coordinate (x)
+			PLAY_BUTTON.text("Play");
+			BRUSH.extent([CURRENT_VALUE, CURRENT_VALUE]);
+			//move();
 	  }
 	  else{
 	  	IS_DRAGGING = false;
-	  }
-
+	}
 	  handle.attr("cx", TIME_SCALE(CURRENT_VALUE)); //location of center of handle
       updateTree();
       updateStudentList();
 		CURRENT_VALUE = BRUSH.extent()[0];
 	}
+}
+ 
+var alpha = 0.25;
+
+function move(){
+  var copyValue = CURRENT_VALUE; // detect interrupt
+  if (MOVING) return false;
+  MOVING = true;
+
+  d3.timer(function() {
+    if (copyValue !== CURRENT_VALUE) return !(MOVING = false);
+
+    copyValue = CURRENT_VALUE = Math.abs(CURRENT_VALUE - TARGET_VALUE) < 1e-3
+        ? TARGET_VALUE
+        : TARGET_VALUE * alpha + CURRENT_VALUE * (1 - alpha);
+
+BRUSH.extent([CURRENT_VALUE, CURRENT_VALUE]);
+          updateTree();
+      updateStudentList();
+        
+    return !(MOVING = CURRENT_VALUE !== TARGET_VALUE); //what does this do?
+  });
 }
 
 var IS_DRAGGING = false;
@@ -1044,7 +1066,7 @@ function updateStudentList(){
 		j++;    
                     
 	});
-	
+			
 	// dynamically update the width and height of the vertical container svg		
 	var aggregateViewContent = d3.select("#aggregateViewContent")
 	contentWidth = aggregateViewContent.node().getBoundingClientRect().width + 20;
@@ -1273,7 +1295,7 @@ function updateTree(){
                         }
                     }
                     
-                    if(CURRENT_STUDENT_STATUS[student].concept != d){ //delete old holder and recreate new holder
+                    if(CURRENT_STUDENT_STATUS[student].concept != d || d3.select(".S" + student).empty()){ //delete old holder and recreate new holder
                     	
                     	d3.selectAll(".S" + student)
                     			.call(studentRemoveTransition);
@@ -1327,9 +1349,7 @@ function updateTree(){
 							.attr("height", "20px")
 							.attr("x", function(){  return 5;})
 							.attr("class", "student_bg")
-							.attr("fill", function(){
-							return CORRECTNESS_SCALE(numCorrect/numShown);
-						})
+							.attr("fill", CORRECTNESS_SCALE(numCorrect/numShown));
 	
 						
 						grp.select(".student_name")
