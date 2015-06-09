@@ -173,6 +173,10 @@ The aggregate visualization is designed to give teachers a high-level overview o
 {\bf Tablet Graphic}\\
 We added a tablet graphic as a mockup for intended use of our visualization. The tablet's display area is restricted, but users can scroll within the tablet screen to navigate. To prevent confusion with multiple sets of scrollbars, we designed our visualization to fit on a 13" MacBook Pro screen. The horizontal view and aggregate views are shown in a vertical and horizontal tablet layout, respectively. The concept view tends to grow vertically faster than in grows horizontally, since it only displays problem information for the student's current concept, whereas the aggregate view tends to grow horizontally much faster than it grows vertically, because there is a fixed number of rows based on the number of students in the class.
 
+{\bf Correctness Glyphs}\\
+Enlearn's initial visualization used green and red filled circles to show the correctness of a single problem. However, these color choices conflict with red and green backgrounds used to denote student progress. We instead choose the common encodings of checks and crosses in a neutral gray. For the purposes of real-time
+intervention, student problem incorrectness is more useful to a teacher than problem correctness, so we color crosses slightly darker than checks to increase their visual significance.
+
 {\bf Correctness Colors}\\
 The default 7-step gradient of colors to represent student problem correctness ranges from a muted orange to a muted green, with yellow as the midpoint - these colors were selected from ColorBrewer2.org, a site created to help designers select easily differentiable color schemes. We chose an orange-green spectrum because red and green are very common encodings for correctness in the educational field - however, we do realize that some users of our tool may be color-blind, so we also include an option to switch to an orange-blue color gradient.
 
