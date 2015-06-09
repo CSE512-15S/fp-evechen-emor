@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  7 JUN 2015 18:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  8 JUN 2015 19:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1006,406 +1006,130 @@ LaTeX Font Info:    Try loading font information for OT1+pcr on input line 87.
 (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 104.
-
-
-LaTeX Warning: Citation `Hill2005' on page \thepage  undefined on input line 10
-4.
-
-
-LaTeX Warning: Citation `Wentzel2002' on page \thepage  undefined on input line
- 104.
-
-
-LaTeX Warning: Citation `Reeve2004' on page \thepage  undefined on input line 1
-04.
-
-
-LaTeX Warning: Citation `Wright1997' on page \thepage  undefined on input line 
-104.
-
-
-LaTeX Warning: Citation `Balaam2010' on page \thepage  undefined on input line 
-104.
-
-
-LaTeX Warning: Citation `Koile2006' on page \thepage  undefined on input line 1
-04.
-
-
-LaTeX Warning: Citation `Lazar2007' on page \thepage  undefined on input line 1
-04.
-
-
-LaTeX Warning: Citation `Koile2006' on page \thepage  undefined on input line 1
-04.
-
-
-LaTeX Warning: Citation `Hickey2014' on page \thepage  undefined on input line 
-104.
-
-
-LaTeX Warning: Citation `Balaam2010' on page \thepage  undefined on input line 
-104.
-
-
-LaTeX Warning: Citation `Lazar2007' on page \thepage  undefined on input line 1
-04.
-
-
-LaTeX Warning: Citation `Koile2006' on page \thepage  undefined on input line 1
-04.
-
-
-LaTeX Warning: Citation `Dangel08' on page \thepage  undefined on input line 10
-6.
-
-
-LaTeX Warning: Citation `Lazar2007' on page \thepage  undefined on input line 1
-06.
-
-
-LaTeX Warning: Citation `Plickers' on page \thepage  undefined on input line 10
-6.
-
-
-LaTeX Warning: Citation `Plickers' on page \thepage  undefined on input line 10
-6.
-
-
-LaTeX Warning: Citation `Zhang2015' on page \thepage  undefined on input line 1
-06.
-
-
-LaTeX Warning: Citation `Arnold2012' on page \thepage  undefined on input line 
-106.
-
-
-LaTeX Warning: Citation `Kim2015' on page \thepage  undefined on input line 106
-.
-
-
 Underfull \hbox (badness 1038) in paragraph at lines 108--109
 \OT1/ptm/m/n/10 solving data to el-e-men-tary school teach-ers in real-time.
  []
 
-<images/TeacherLesson.pdf, id=7, 1204.5pt x 1927.2pt>
-File: images/TeacherLesson.pdf Graphic file (type pdf)
 
-<use images/TeacherLesson.pdf>
-Package pdftex.def Info: images/TeacherLesson.pdf used on input line 114.
-(pdftex.def)             Requested size: 113.81102pt x 182.08607pt.
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-<images/TeacherEX.pdf, id=8, 1204.5pt x 1927.2pt>
-File: images/TeacherEX.pdf Graphic file (type pdf)
- <use images/TeacherEX.pdf>
-Package pdftex.def Info: images/TeacherEX.pdf used on input line 115.
-(pdftex.def)             Requested size: 113.81102pt x 182.08607pt.
-
-<images/TeacherDashboard.pdf, id=9, 1204.5pt x 1927.2pt>
-File: images/TeacherDashboard.pdf Graphic file (type pdf)
-
-<use images/TeacherDashboard.pdf>
-Package pdftex.def Info: images/TeacherDashboard.pdf used on input line 116.
-(pdftex.def)             Requested size: 113.81102pt x 182.08607pt.
-
-<images/Student.pdf, id=10, 1204.5pt x 1927.2pt>
-File: images/Student.pdf Graphic file (type pdf)
- <use images/Student.pdf>
-Package pdftex.def Info: images/Student.pdf used on input line 117.
-(pdftex.def)             Requested size: 113.81102pt x 182.08607pt.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 119.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 147.
-
-
-LaTeX Warning: Reference `fig:Schools' on page \thepage  undefined on input lin
-e 168.
-
-[1{/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+ [1{/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 Non-PDF special ignored!
 
 ]
-
-LaTeX Warning: Citation `Hill2005' on page \thepage  undefined on input line 21
-1.
-
-
-LaTeX Warning: Citation `Wentzel2002' on page \thepage  undefined on input line
- 211.
+Underfull \hbox (badness 2181) in paragraph at lines 120--121
+[]\OT1/ptm/m/n/10 Enlearn eval-u-ated two vi-su-al-iza-tions with teach-ers thi
+s
+ []
 
 
-LaTeX Warning: Citation `Reeve2004' on page \thepage  undefined on input line 2
-11.
+Underfull \hbox (badness 1515) in paragraph at lines 143--144
+[]\OT1/ptm/m/n/10 From our char-ac-ter-i-za-tion of the struc-ture of En-learn'
+s
+ []
 
 
-LaTeX Warning: Citation `Wright1997' on page \thepage  undefined on input line 
-211.
-
-
-LaTeX Warning: Reference `fig:Ratings' on page \thepage  undefined on input lin
-e 213.
-
-
-LaTeX Warning: Reference `fig:Schools' on page \thepage  undefined on input lin
-e 213.
-
-
-Underfull \hbox (badness 1325) in paragraph at lines 218--219
-[]\OT1/ptm/m/n/10 This school serves a high-income, pre-dom-i-nantly white
+Underfull \hbox (badness 1097) in paragraph at lines 148--149
+[]\OT1/ptm/m/n/10 Visualizations must dis-play concept-level data so that
  []
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.219 
-       [2 <./images/TeacherLesson.pdf> <./images/TeacherEX.pdf> <./images/Teach
-erDashboard.pdf> <./images/Student.pdf>]
-<images/assists.pdf, id=82, 385.44pt x 345.29pt>
-File: images/assists.pdf Graphic file (type pdf)
- <use images/assists.pdf>
-Package pdftex.def Info: images/assists.pdf used on input line 283.
-(pdftex.def)             Requested size: 127.04268pt x 113.81102pt.
-
-<images/reteach.pdf, id=83, 385.44pt x 344.28625pt>
-File: images/reteach.pdf Graphic file (type pdf)
- <use images/reteach.pdf>
-Package pdftex.def Info: images/reteach.pdf used on input line 284.
-(pdftex.def)             Requested size: 127.4132pt x 113.81102pt.
-
-<images/taplog.pdf, id=84, 437.38406pt x 213.04594pt>
-File: images/taplog.pdf Graphic file (type pdf)
- <use images/taplog.pdf>
-Package pdftex.def Info: images/taplog.pdf used on input line 285.
-(pdftex.def)             Requested size: 233.66112pt x 113.81102pt.
-
-Underfull \vbox (badness 2617) has occurred while \output is active []
-
-pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
-een already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.291 \section
-              {Findings: Teacher and Student Behavior} [3]
-
-LaTeX Warning: Citation `Higgins94' on page \thepage  undefined on input line 2
-94.
-
-
-LaTeX Warning: Citation `Salter93' on page \thepage  undefined on input line 29
-4.
-
-
-LaTeX Warning: Citation `Wobbrock11' on page \thepage  undefined on input line 
-294.
-
-pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
-een already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.310 
-       [4 <./images/assists.pdf> <./images/reteach.pdf> <./images/taplog.pdf>]
-
-LaTeX Warning: Reference `fig:Assists' on page \thepage  undefined on input lin
-e 311.
-
-
-LaTeX Warning: Reference `fig:Reteaches' on page \thepage  undefined on input l
-ine 318.
-
-(./data_table_problem_solving.tex)
-<images/exercise_histogram.pdf, id=135, 336.50719pt x 327.47343pt>
-File: images/exercise_histogram.pdf Graphic file (type pdf)
-
-<use images/exercise_histogram.pdf>
-Package pdftex.def Info: images/exercise_histogram.pdf used on input line 339.
-(pdftex.def)             Requested size: 184.9429pt x 179.98103pt.
-
-
-LaTeX Warning: Reference `fig:ClassTime' on page \thepage  undefined on input l
-ine 349.
-
-
-Underfull \hbox (badness 1297) in paragraph at lines 349--351
-\OT1/ptm/m/n/10 solving time since prob-lems were de-liv-ered to stu-dents
- []
-
-LaTeX Font Info:    Try loading font information for OML+ptm on input line 375.
-
-(/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/omlptm.fd
-File: omlptm.fd 
-)
-LaTeX Font Info:    Font shape `OML/ptm/m/n' in size <10> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 375.
-
-Underfull \hbox (badness 1874) in paragraph at lines 375--376
-\OT1/ptm/m/n/10 dents com-plet-ing more ex-er-cise prob-lems in the tablet
- []
-
-
-Underfull \hbox (badness 1163) in paragraph at lines 375--376
-\OT1/ptm/m/n/10 Unit 2 (F(3,209)=62.511, \OT1/ptm/m/it/10 p\OML/cmm/m/it/10 <\O
-T1/ptm/m/n/10 0.0001, $\OML/txmi/m/it/10 ^^Q[]$\OT1/ptm/m/n/10 =0.66) and Unit
- []
-
-pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
-een already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.377 T
-       o understand the effect of \emph{Condition} at each school, we ran a ...
-[5 <./images/exercise_histogram.pdf>]
-
-LaTeX Warning: Reference `tab:ProblemSolvingStats' on page \thepage  undefined 
-on input line 377.
-
-
-LaTeX Warning: Reference `fig:ProblemSolvingEX' on page \thepage  undefined on 
-input line 379.
-
-
-Underfull \hbox (badness 1163) in paragraph at lines 389--390
-\OT1/ptm/m/n/10 Unit 2 (F(1,209)=41.296, \OT1/ptm/m/it/10 p\OML/cmm/m/it/10 <\O
-T1/ptm/m/n/10 0.0001, $\OML/txmi/m/it/10 ^^Q[]$\OT1/ptm/m/n/10 =0.92) and Unit
- []
-
-
-LaTeX Warning: Reference `tab:ProblemSolvingStats' on page \thepage  undefined 
-on input line 391.
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-<images/engagement.png, id=156, 649.67719pt x 152.82094pt>
-File: images/engagement.png Graphic file (type png)
-
-<use images/engagement.png>
-Package pdftex.def Info: images/engagement.png used on input line 399.
-(pdftex.def)             Requested size: 369.88582pt x 87.00854pt.
-
-
-LaTeX Warning: Reference `tab:ProblemSolvingStats' on page \thepage  undefined 
-on input line 408.
-
-
-Underfull \vbox (badness 7832) has occurred while \output is active []
-
-pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
-een already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.411 
-       [6]
-
-LaTeX Warning: Reference `tab:ProblemSolvingStats' on page \thepage  undefined 
-on input line 415.
-
-
-LaTeX Warning: Citation `Ocumpaugh15' on page \thepage  undefined on input line
- 457.
-
-
-LaTeX Warning: Citation `Baker04' on page \thepage  undefined on input line 457
-.
-
-
-LaTeX Warning: Citation `Pardos13' on page \thepage  undefined on input line 45
-7.
-
-
-LaTeX Warning: Reference `tab:EngagementStats' on page \thepage  undefined on i
-nput line 462.
-
-(./data_table_engagement.tex
-Overfull \hbox (16.75455pt too wide) in paragraph at lines 7--28
- [] 
- []
-
-)
-Underfull \vbox (badness 1052) has occurred while \output is active []
-
-pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
-een already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.489 
-       [7 <./images/engagement.png (PNG copy)>]
-
-LaTeX Warning: Reference `tab:EngagementStats' on page \thepage  undefined on i
-nput line 490.
-
-(./datavis.bbl
+l.164 
+       [2]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 173.
+ (./datavis.bbl
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 44.
 LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <8> not available
 (Font)              Font shape `OT1/pcr/b/n' tried instead on input line 44.
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.201 
-       [8]
+l.72 
+      [3]pdfTeX warning (ext4): destination with the same identifier (name{page
+.}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.287 \bibitem{Kreitmayer2013}
+                               [4]
 Missing character: There is no Õ in font ptmri7t!
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.426 
-       [9])pdfTeX warning (ext4): destination with the same identifier (name{pa
-ge.}) has been already used, duplicate ignored
+l.511 \bibitem{Wobbrock11}
+                           [5])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 243.
+pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
+een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.540 \end{document}
-                     [10]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 540.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 540.
+l.243 \end{document}
+                     [6
+
+]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 243.
  (./datavis.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 540.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 540.
-
-
-Package rerunfilecheck Warning: File `datavis.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `datavis.out':
-(rerunfilecheck)             Before: D41D8CD98F00B204E9800998ECF8427E;0
-(rerunfilecheck)             After:  128A81D51CB615BA0F88D3BC0BC99BF5;1843.
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 540.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 243.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 243.
+Package rerunfilecheck Info: File `datavis.out' has not changed.
+(rerunfilecheck)             Checksum: A82EB075C365D465BF4E0E58F2058907;1222.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 243.
  ) 
 Here is how much of TeX's memory you used:
- 17882 strings out of 493117
- 328208 string characters out of 6135433
- 395943 words of memory out of 5000000
- 20847 multiletter control sequences out of 15000+600000
- 52917 words of font info for 115 fonts, out of 8000000 for 9000
+ 17784 strings out of 493117
+ 326260 string characters out of 6135433
+ 385576 words of memory out of 5000000
+ 20793 multiletter control sequences out of 15000+600000
+ 41769 words of font info for 101 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,11n,56p,1286b,436s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2014/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/te
-xlive/2014/texmf-dist/fonts/type1/public/txfonts/rtxmi.pfb></usr/local/texlive/
-2014/texmf-dist/fonts/type1/public/txfonts/rtxr.pfb></usr/local/texlive/2014/te
-xmf-dist/fonts/type1/public/txfonts/txsy.pfb></usr/local/texlive/2014/texmf-dis
-t/fonts/type1/urw/courier/ucrb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/
-type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/ur
-w/helvetic/uhvb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/helve
-tic/uhvro8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/times/utmb8
-a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></us
-r/local/texlive/2014/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on datavis.pdf (10 pages, 1508168 bytes).
+ 62i,9n,56p,1697b,436s stack positions out of 5000i,500n,10000p,200000b,80000s
+pdfTeX warning (dest): name{section*.22} has been referenced but does not exi
+st, replaced by a fixed one
+
+pdfTeX warning (dest): name{section*.21} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{section*.20} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{section*.19} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{section*.18} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{section*.6} has been referenced but does not exist,
+ replaced by a fixed one
+
+pdfTeX warning (dest): name{section*.5} has been referenced but does not exist,
+ replaced by a fixed one
+
+pdfTeX warning (dest): name{section*.3} has been referenced but does not exist,
+ replaced by a fixed one
+
+pdfTeX warning (dest): name{section*.2} has been referenced but does not exist,
+ replaced by a fixed one
+
+{/usr/local/texlive/2014/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
+live/2014/texmf-dist/fonts/type1/public/txfonts/txsy.pfb></usr/local/texlive/20
+14/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/local/texlive/2014/texmf
+-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2014/texmf-dist/fo
+nts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/typ
+e1/urw/helvetic/uhvro8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw
+/times/utmb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/times/utm
+r8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on datavis.pdf (6 pages, 121850 bytes).
 PDF statistics:
- 339 PDF objects out of 1000 (max. 8388607)
- 280 compressed objects within 3 object streams
- 94 named destinations out of 1000 (max. 500000)
- 58 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 298 PDF objects out of 1000 (max. 8388607)
+ 279 compressed objects within 3 object streams
+ 81 named destinations out of 1000 (max. 500000)
+ 181 words of extra memory for PDF output out of 10000 (max. 10000000)
 
