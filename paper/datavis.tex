@@ -170,30 +170,62 @@ The aggregate visualization is designed to give teachers a high-level overview o
 
 \subsubsection{Visualization Options}
 
-{\bf Tablet Graphic}
+{\bf Tablet Graphic}\\
 We added a tablet graphic as a mockup for intended use of our visualization. The tablet's display area is restricted, but users can scroll within the tablet screen to navigate. To prevent confusion with multiple sets of scrollbars, we designed our visualization to fit on a 13" MacBook Pro screen. The horizontal view and aggregate views are shown in a vertical and horizontal tablet layout, respectively. The concept view tends to grow vertically faster than in grows horizontally, since it only displays problem information for the student's current concept, whereas the aggregate view tends to grow horizontally much faster than it grows vertically, because there is a fixed number of rows based on the number of students in the class.
 
-{\bf Correctness Colors}
+{\bf Correctness Glyphs}\\
+Enlearn's initial visualization used green and red filled circles to show the correctness of a single problem. However, these color choices conflict with red and green backgrounds used to denote student progress. We instead choose the common encodings of checks and crosses in a neutral gray. For the purposes of real-time
+intervention, student problem incorrectness is more useful to a teacher than problem correctness, so we color crosses slightly darker than checks to increase their visual significance.
+
+{\bf Correctness Colors}\\
 The default 7-step gradient of colors to represent student problem correctness ranges from a muted orange to a muted green, with yellow as the midpoint - these colors were selected from ColorBrewer2.org, a site created to help designers select easily differentiable color schemes. We chose an orange-green spectrum because red and green are very common encodings for correctness in the educational field - however, we do realize that some users of our tool may be color-blind, so we also include an option to switch to an orange-blue color gradient.
 
 {\bf Button Layout}\\
 To provide context to our visualization, the right side of our visualization contains information on the currently selected view, as well as the buttons for various interaction options: switching the view, switching the class session, and switching colors. These buttons are displayed inline with brief descriptions of their purpose.
 
-{\bf Timeline}
-We display lines on the timeline where problem-solving actions occurred. These visual information scent cues (cite Jeff's 2007 paper) help to familiarize the viewer with the data set. While we designed this feature for our benefit as designers, it may be valuable when used by teachers to play back their lessons.
+{\bf Timeline}\\
+We display lines on the timeline where problem-solving actions occurred. These visual information scent cues \cite{Willet2007} help to familiarize the viewer with the data set. While we designed this feature for our benefit as designers, it may be valuable when used by teachers to play back their lessons.
 
-{\bf Animation}
+{\bf Animation}\\
 We use animation to signify changes. When the user clicks the button to switch views, the tablet and information box about the current view fade out, and then the new view fades in. In the concept view, student movement to a new concept is shown by a fade out-fade in transition, leaving a small gap amongst the students in their previous concept to highlight the student's prior location. To prevent viewers from becoming overwhelmed by too much visual movement, check and cross marks that signify problem correctness simply pop into existence.
+
+{\bf Data Choices}\\
+Our system provides a selection of 5 datasets that the user can switch between freely. The datasets all come from classes taught by a single teacher in a South Seattle school. We envision a teacher using our tool to replay and compare the progress of different class periods, or the same class period over different lessons. 
 
 \subsection{Implementation}
 Enlearn's current visualizations are created using the D3.js visualization library. Hence, we also use D3.js, not only to be compatible within Enlearn's existing workflow, but also to prepare a foundation for a future web-based tool so that teachers will not be dependent on the Enlearn tablet software and can view student data from any computer.
 
-\section{Results}
+
+\section{Results \& Discussion}
 %The visualizations your system produces and data to help evaluate your approach. For example you may include running times, or the time users typically spend generating a visualization using your system.
 
-%\begin{figure}[t]
-%\label{fig:TeacherLesson}\includegraphics[width=40mm]{images/TeacherLesson.pdf}
-%\end{figure*}
+%What has the audience learned from your work? What new insights or practices has your system enabled? A full blown user study is not expected, but informal observations of use that help evaluate your system are encouraged.
+Our final product is a visualization that integrates our concept view and aggregate views, playing back student progress over a math lesson via a timeline slider that supports brushing. Prior work displays student data at an assignment level, which does not afford immediate intervention in the classroom (may be a wild claim, must confirm). Our system simulates real-time, problem level visualizations that teachers can use to track student problem-solving progress. Through the concept view, teachers can immediately see which students need assistance and what to assist them with, and through the aggregate view, teachers can monitor longer term student progress over the course of a lesson. 
+
+On a more general level, our work is not limited to playing back data gathered from Enlearn math tablets. Any data set with information about problem time completion, problem correctness and problem concept grouping could be visualized using our tool.
+
+Overall, attendees of the CSE 512 project poster session reacted positively, commenting that our system was visually clean and easy to understand. One viewer mentioned that he taught middle school students and would find our visualization useful for tracking their progress. %Nell, can confirm? I think it was Kevin who said it
+
+%Image dump can go here
+\begin{figure}[t]
+\centering
+\includegraphics[width=65mm]{images/results1.pdf}
+\caption{Caption here}
+\label{fig:Results1}
+\end{figure}
+
+\section{Future Work}
+%A description of how your system could be extended or refined.
+As described above, the visual information scent cues overlaid on our timeline slider help inform viewers of gaps where students were not completing tablet problems. The teacher version of Enlearn's software collects data on teacher actions, such as sending a pause signal to freeze all student tablets to get their attention, or switching between lessons. Such information could be overlaid with the timeline slider as insight to teachers. For example, this feature could show that during a time when the teacher is talking, some problem solving activity is still present. This means some students  are off task and using their tablets instead of paying attention to their teacher. However, there is currently no feature to tell which student is associated with which tick marks. Calling out a student's associated tick marks when their name is clicked in the aggregate view would help teachers to monitor an individual student's activity patterns.
+
+Multiple visitors to the poster session that our aggregate view was not as easily glanceable as the concept view. They all independently suggested that information about each student's progress over a single concept could be collapsed into a single representative glyph, such as a shape colored to represent correctness. This way, all students' data could be displayed in a matrix, with pertinent information readily visible at a glance and detailed information accessible by tapping on the student's name. 
+
+Another comment received during the poster session was that our animation transitions could be clearer to help teachers track the movement of students between concepts.
+
+Although the above suggestions have potential to improve our work, an important next step is to evaluate our system with actual teachers. Enlearn has a preexisting relationship with Seattle school teachers, with whom they have collected tablet data over multiple trials. Since Enlearn's current visualizations are also created in D3.js, we can port our system into their software, to be evaluated in future classroom trials. Suggestions from the target audience are invaluable to substantial improvements to our work.
+
+\section{Conclusion}
+Our work makes contributions at multiple levels of Munzner?s nested model for visualization design: a characterization of the data visualization needs of classroom teachers, a data abstraction for representing student data grouped by concept, and two new visual encodings for displaying student problem-solving data both streamed in real time and played back after the fact. Our system empowers teachers to easily identify students for real-time assistance, track lesson-level metrics and monitor student progress over multiple lessons.
 
 %\begin{figure*}[t]
 %\centering
@@ -205,16 +237,6 @@ Enlearn's current visualizations are created using the D3.js visualization libra
 %Screenshots of the Teacher and Student software. Figure (a) shows the teacher lesson view. Figure (b) shows a prompt for the teacher to ``Start Exercise 1'' on all student tablets. Figure (c) shows the teacher Dashboard that displays student problem-solving progress. Figure (d) shows the student problem-solving interface, with a calculator input interface at the bottom of the screen and badges at the top that indicate problem correctness. }
 %\label{fig:Spreadsheet}
 %\end{figure*}
-
-\section{Discussion}
-What has the audience learned from your work? What new insights or practices has your system enabled? A full blown user study is not expected, but informal observations of use that help evaluate your system are encouraged.
-
-\section{Future Work}
-A description of how your system could be extended or refined.
-Showing student's action data on timeline when clicking the student iie Side effect of devlpoment was timeline can help teachers too, showing student action data is another way to help teachers track attentiveness or focus
-
-\section{Conclusion}
-
 
 
 % Balancing columns in a ref list is a bit of a pain because you
