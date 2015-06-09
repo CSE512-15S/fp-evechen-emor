@@ -5,73 +5,54 @@ The style file: SIGCHI-Reference-Format.bst
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Database file #1: references.bib
-Warning--I didn't find a database entry for "something"
-Warning--I didn't find a database entry for "chinmay"
 Reallocated singl_function (elt_size=4) to 100 items from 50.
-Warning--require articleno with numpages field in Agarwal2006
-Warning--empty publisher in Andersen13
-Warning--empty address in Andersen13
-Warning--require articleno with numpages field in Anderson2007
 Warning--require articleno with numpages field in Arnold2012
-Warning--require articleno with numpages field in Baker04
 Warning--require articleno with numpages field in Balaam2010
-Warning--require articleno with numpages field in Brooks14
-Warning--require articleno with numpages field in Coopey2013
-Warning--empty address in Gee03
-Warning--page numbers missing in both pages and numpages fields in Graesser2004
 Warning--require articleno with numpages field in Hickey2014
 Warning--require articleno with numpages field in Hill2005
 Warning--require articleno with numpages field in Kim2015
 Warning--require articleno with numpages field in Koile2006
-Warning--require articleno with numpages field in Kostadinova2012
-Warning--require articleno with numpages field in Kreitmayer2013
-Warning--require articleno with numpages field in Kulkarni2015
 Warning--require articleno with numpages field in Lazar2007
-Warning--empty institution in Murray15
-Warning--require articleno with numpages field in ORourke14b
-Warning--require articleno with numpages field in Pardos13
-Warning--require articleno with numpages field in Szafir2013
 Warning--require articleno with numpages field in Wentzel2002
-Warning--require articleno with numpages field in Wobbrock11
-You've used 48 entries,
+You've used 14 entries,
             5283 wiz_defined-function locations,
-            1625 strings with 25581 characters,
-and the built_in function-call counts, 54666 in all, are:
-= -- 7842
-> -- 1469
-< -- 2
-+ -- 458
-- -- 1212
-* -- 3593
-:= -- 5421
-add.period$ -- 248
-call.type$ -- 48
-change.case$ -- 332
-chr.to.int$ -- 48
-cite$ -- 73
-duplicate$ -- 3889
-empty$ -- 2755
-format.name$ -- 618
-if$ -- 12904
+            1356 strings with 17946 characters,
+and the built_in function-call counts, 19858 in all, are:
+= -- 2975
+> -- 392
+< -- 0
++ -- 119
+- -- 613
+* -- 1307
+:= -- 1836
+add.period$ -- 71
+call.type$ -- 14
+change.case$ -- 91
+chr.to.int$ -- 14
+cite$ -- 22
+duplicate$ -- 1164
+empty$ -- 826
+format.name$ -- 171
+if$ -- 4459
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 168
-newline$ -- 456
-num.names$ -- 290
-pop$ -- 1351
+missing$ -- 52
+newline$ -- 165
+num.names$ -- 84
+pop$ -- 379
 preamble$ -- 1
-purify$ -- 521
+purify$ -- 147
 quote$ -- 0
-skip$ -- 1055
+skip$ -- 327
 stack$ -- 0
-substring$ -- 6536
-swap$ -- 397
-text.length$ -- 1407
+substring$ -- 3049
+swap$ -- 128
+text.length$ -- 951
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 428
-warning$ -- 25
-while$ -- 333
+type$ -- 126
+warning$ -- 8
+while$ -- 106
 width$ -- 0
-write$ -- 785
-(There were 27 warnings)
+write$ -- 260
+(There were 8 warnings)
