@@ -176,13 +176,13 @@ We added a tablet graphic as a mockup for intended use of our visualization. The
 {\bf Correctness Colors}
 The default 7-step gradient of colors to represent student problem correctness ranges from a muted orange to a muted green, with yellow as the midpoint - these colors were selected from ColorBrewer2.org, a site created to help designers select easily differentiable color schemes. We chose an orange-green spectrum because red and green are very common encodings for correctness in the educational field - however, we do realize that some users of our tool may be color-blind, so we also include an option to switch to an orange-blue color gradient.
 
-{\bf Button Layout}
+{\bf Button Layout}\\
 To provide context to our visualization, the right side of our visualization contains information on the currently selected view, as well as the buttons for various interaction options: switching the view, switching the class session, and switching colors. These buttons are displayed inline with brief descriptions of their purpose.
 
-\{b Timeline}
+{\bf Timeline}
 We display lines on the timeline where problem-solving actions occurred. These visual information scent cues (cite Jeff's 2007 paper) help to familiarize the viewer with the data set. While we designed this feature for our benefit as designers, it may be valuable when used by teachers to play back their lessons.
 
-\{b Animation}
+{\bf Animation}
 We use animation to signify changes. When the user clicks the button to switch views, the tablet and information box about the current view fade out, and then the new view fades in. In the concept view, student movement to a new concept is shown by a fade out-fade in transition, leaving a small gap amongst the students in their previous concept to highlight the student's prior location. To prevent viewers from becoming overwhelmed by too much visual movement, check and cross marks that signify problem correctness simply pop into existence.
 
 \subsection{Implementation}
