@@ -11,10 +11,15 @@ Visualizing Student Problem Solving In Real Time
 In this work, we explore the design of visualizations for communicating student problem-solving progress to teachers in real-time. We partnered with Enlearn, a non-profit company that creates tablet-based adaptive problem-solving software for K-12 classrooms. To conduct this research, we first characterized the domain problem, then designed appropriate data abstractions, and finally developed two new visual encoding for student problem-solving data to support teacher tasks. Our final website simulates how our visualization designs would look displayed on tablet devices with real-time streaming data.
 
 For more information about this project, check out the following resources:
+
 [Visualization] (http://cse512-15s.github.io/fp-evechen-emor/code/visualization.html)
+
 [Project Page] (http://cse512-15s.github.io/fp-evechen-emor/)
+
 [Poster] (http://cse512-15s.github.io/fp-evechen-emor/final/poster.pdf)
+
 [Paper] (http://cse512-15s.github.io/fp-evechen-emor/final/paper.pdf)
+
 
 
 ## Development Process
