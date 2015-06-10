@@ -80,7 +80,7 @@
   Eleanor O'Rourke\\
   \texttt{eorourke@cs.washington.edu}
 }
-\title{Visualizing Student Problem-Solving Data}
+\title{Visualizing Student Problem Solving In Real Time}
 
 
 \maketitle
@@ -96,6 +96,8 @@ Research in education highlights the importance of exposing student data to teac
 
 %\category{H.5.0.}{Information Interfaces and Presentation}{General}
 
+
+
 \section{Introduction}
 %An explanation of the problem and the motivation for solving it.
 
@@ -103,13 +105,24 @@ Historically it has been impossible for K-12 teachers to record and summarize st
 
 As digital technologies become more common in classrooms, teachers can collect and analyze rich student data during class time. One early technology for collecting student data during lecture-based classes is the ``clicker'', which is used to assess student responses to multiple-choice questions during class \cite{Dangel08, Lazar2007}. In smaller classes, tablet-based software is becoming common. As these types of technologies become ubiquitous, the challenge morphs to one of data accessibility rather than data availability. Little research has explored how student data should be visualized for teachers in real-time to most effectively support in-class analysis tasks.
 
-In this work, we explore the design of visualizations for exposing student progress in real-time for classroom teachers. To conduct this research, we partnered with Enlearn, a non-profit company that creates tablet-based adaptive problem-solving software for K-12 classrooms. In Enlearn classrooms, students work on math practice problems on individual tablets during class, while the teacher monitors progress on her own tablet and assists individual students who are struggling. Enlearn has studied two different methods of visualizing student data for teachers, but found that their designs were not appropriate for teachers' in-class needs. These findings highlight the need for further research in student data visualization design.
+\begin{figure}[t]
+\centering
+\includegraphics[width=55mm]{images/ConceptVisualization.pdf}
+\caption{Our concept visualization of real-time student problem-solving data. Students are grouped by the mathematical concept that they are currently working on, and we only display information for the current concept. This view is designed to help teachers rapidly identify struggling students so that they can provide individual assistance.}
+\label{fig:ConceptVisualization}
+\end{figure}
+
+In this work, we explore the design of visualizations for communicating student progress to teachers in real-time. To conduct this research, we partnered with Enlearn, a non-profit company that creates tablet-based adaptive problem-solving software for K-12 classrooms. In Enlearn classrooms, students work on math practice problems on individual tablets during class, while the teacher monitors progress on her own tablet and assists individual struggling students. Enlearn has studied two different methods of visualizing student data for teachers, but found that their designs were not appropriate for teachers' in-class needs. These findings highlight the need for further research in student data visualization design.
 
 We first characterize the student data visualization problem space, and develop a set of design guidelines for real-time visualizations. These guidelines focus on the importance of providing actionable information for teachers and presenting data at both the student and concept level. We then define the operations needed to transform the data into a format that addresses teacher needs, specifically \emph{sorting} and \emph{computing} average performance. Finally, we present two new visual encodings for student data: one that displays information for the concepts students are working on in the present moment, and another that displays aggregate performance across multiple concepts. While we have not yet formally evaluated our visualization designs with teachers, we present a discussion based around early feedback from Enlearn staff.
+
+
 
 %Traditionally, teachers have lacked the tools necessary to record student progress during the course of a classroom lesson. However, the increasing ubiquity of digital technology in classrooms affords collection of student data, often in a relatively simple process. The issue now morphs into one of data accessibility rather than data availability. Prior work in the education field shows the utility of student data, allowing teachers to provide students with instantaneous, real time feedback and intervention \cite{Balaam2010, Koile2006, Lazar2007}. However, little is known about the best ways to display it. Through informal discussions, we learned that during classroom instruction, teachers need information that is clear at a quick glance and exposes data on individual students, rather than aggregate data for groups of students. 
 
 %We partner with Enlearn, a non-profit company that creates tablet-based adaptive problem-solving software for K-12 classrooms. Enlearn's software contains two visualizations of real-time student problem solving progress. While teachers appreciated being able to monitor their students' progress, the visualizations were not completely appropriate for their needs, in terms of both information conveyed and visual design. In our work, we create new visualizations of student problem-solving data that align closer to teacher requirements. 
+
+
 
 \section{Related Work}
 Recent research in educational technology explores methods of exposing student data to assist teachers. In this section, we review this prior work and also describe Enlearn's early visualization designs for communicating student problem-solving data to teachers in the classroom.
@@ -121,6 +134,13 @@ A number of systems have been developed for exposing student data for teachers. 
 
 While research shows that student data can help teachers understand student progress and affect how they spend class time, little is known about how to visualize student data to effectively communicate with teachers. Most existing systems use traditional visualizations such as bar charts to display aggregate student data \cite{Dangel08, Lazar2007} or show raw student solutions \cite{Anderson2007, Koile2006}. However, these approaches are not appropriate for adaptive curriculums where students are working on different concepts simultaneously. Furthermore, we are not aware of any research that explicitly studies the utility of these visualization approaches for classroom teachers. In our work, we introduce two novel visual encodings for real-time student data based on design principles developed by characterizing teacher needs in the classroom.
 
+\begin{figure}[t]
+\centering
+\subfigure[]{\label{fig:Prior1}\includegraphics[width=40mm]{images/EnlearnViz1.pdf}} \hspace{1em}%
+\subfigure[]{\label{fig:Prior2}\includegraphics[width=40mm]{images/EnlearnViz2.pdf}} \hspace{1em}%
+\caption{Enlearn's initial visualization designs. Figure (a) shows a table view of overall student performance over the course of the lesson. Figure (b) shows a graph of concept interdependency, with students organized by their current concept. Neither visualization was successful at providing the actionable information teachers need during class.}
+\label{fig:Prior}
+\end{figure}
 
 
 %In this work, we explore methods of exposing rich problem-solving data to elementary school teachers in real-time. Through a longitudinal study, we explore how teacher behavior is impacted by exposing information about student misconnects and progress through curriculum material.
@@ -132,13 +152,7 @@ While research shows that student data can help teachers understand student prog
 
 %We have not encountered any papers that study the design of visualizations of student data. Enlearn has implemented two different methods of visualizing student data in real-time for teachers, however, both of their designs have had usability and readability problems when tested in classrooms. This shows how challenging it is to create effective visualizations for communicating student data in real-time. Enlearn's first design, shown in Figure 1a, displays a table view of student problem solving pace and correctness. While this visualization provides information about the progress of individual students, it communicates nothing about the specific concepts that students are struggling with. Enlearn's second design, shown in Figure 1b, displays a graph view of student problem solving that is organized by concept. While this displays information about the concepts that students are struggling with, there is no way for teachers to see which individuals are struggling. Most importantly, neither visualization provides teachers with actionable suggestions about how to assist students who are struggling. Prior work shows the utility of communicating student data for instructors, and Enlearn?s experiences with their current visualizations shows the challenge of designing effective means of communicating data, especially in real time for busy teachers. This motivates our desire to improve and strengthen the data visualization for the Enlearn software.
 
-\begin{figure*}[t]
-\centering
-\subfigure[]{\label{fig:Prior1}\includegraphics[width=40mm]{images/prior1.pdf}} \hspace{1em}%
-\subfigure[]{\label{fig:Prior2}\includegraphics[width=40mm]{images/prior2.pdf}} \hspace{1em}%
-\caption{Enlearn's initial attempts at visualizing student problem-solving data in real time. Figure (a) shows a table view of overall student performance over the course of the lesson. Figure (b) shows students organized by current concept. Both visualizations have design and usability flaws with regards to teacher needs, which motivates our work of creating create new, more appropriate visualizations.}
-\label{fig:Prior}
-\end{figure*}
+
 
 \subsection{Enlearn's Existing Visualizations}
 This spring, Enlearn ran a one-week study exploring the effectiveness of two different visualizations designed to expose real-time student data for teachers. The study revealed that both designs have usability and readability problems. 
@@ -158,19 +172,19 @@ More generally, teachers told Enlearn that they want visualizations that provide
 
 
 \section{Methods}
-To address the challenge of designing effective techniques for visualizing student problem-solving data for teachers, we characterize the problem, discuss our data abstractions, present our visual encodings for conveying the data, and, lastly, describe our implementation.
+This research explores the challenge of designing effective techniques for visualizing student problem-solving data for teachers. We make contributions and multiple levels of Munzner's nested model of visualization design \cite{Munzner09}. First, we characterize the domain problem, next we discuss our data abstraction designs, then we present our novel visual encoding designs, and finally we describe our implementation.
 
 
 \subsection{Problem Characterization}
 The initial goal of this research was to understand the format of the problem-solving data collected by the Enlearn software and accurately characterize the tasks that teachers want to accomplish using this data. The challenges that Enlearn faced with their initial visualization designs shows the importance of understanding user needs; Enlearn's visualizations failed in large part because they did not effectively support teacher tasks. While we did not directly meet with teachers, we worked closely with Enlearn staff to understand the feedback they received in response to their initial visualizations. Here, we first describe the structure of the problem-solving data collected by Enlearn, and then describe teacher tasks. We provide a set of design guidelines for our visualizations based on this problem characterization.
 
 \subsubsection{Enlearn Data Structure}
-In Enlearn classrooms, each student solves problems on a personal tablet. Enlearn logs the following problem-solving information to a database: the id of the student, the id of the problem, the id of the associated problem set, the problem completion timestamp,  and whether or not the student answered the problem correctly. The Enlearn adaptive curriculum is designed as an extension of the JUMP Math curriculum \cite{JUMPMath}. In JUMP Math, students solve a linear progression of Exercise and Workbook problems. In Enlearn's adaptive version of the curriculum, students practice each type of Exercise or Workbook problem until they have mastered the concept covered by that problem. As a result, students may work on multiple practice problems of the type ``Exercise Problem 3'' before moving on to the next problem type. Enlearn refers to each problem type as a \emph{problem set}, but we use the term \emph{concept} in this paper since it better matches how teachers refer to the groups of problems.
+In Enlearn classrooms, each student solves problems on a personal tablet. Enlearn logs the following problem-solving information: the id of the student, the id of the problem, the id of the associated problem set, the problem completion timestamp, and whether or not the student answered the problem correctly. Enlearn's adaptive curriculum is designed as an extension of the JUMP Math curriculum \cite{JUMPMath}. In JUMP Math, students solve a linear progression of Exercise and Workbook problems. In Enlearn's adaptive version of the curriculum, students practice each type of Exercise or Workbook problem until they have mastered the concept covered by that problem. As a result, students may work on multiple practice problems of the type ``Exercise Problem 3'' before moving on to the next problem type. Enlearn refers to each problem type as a \emph{problem set}, but we use the term \emph{concept} in this paper since it better matches how teachers refer to the groups of problems.
 
 \subsubsection{Teacher Tasks}
 Through our discussions with Enlearn staff, we learned that there are two primary tasks that teachers want to accomplish using student problem-solving data during class. First, teachers want to determine which students need individual assistance and what specific concepts they are struggling with at any given moment. Ideally, teachers would also be able to see if multiple students are struggling with the same concept at the same time so that they can pull the students aside to work with as a group. Second, teachers want to determine how each student is performing overall during the current lesson. If many students are struggling with the content, the teacher may chose to re-teach parts of the lesson.
 
-While Enlearn's initial visualizations tried to target these tasks, they did not provide adequate information for teachers to be able to quickly determine which students were struggling the most and what concepts they were currently working on. The overwhelming feedback that Enlearn was given by teachers after their trial was that the real-time visualizations need to provide information that is glanceable and immediately actionable. During class, teachers are busy adapting lessons, responding to students, and managing organizational challenges. They do not have time to explore a complex visualization of student data. Instead, they need a simple view that provides them with the exact information they need to accomplish in-class tasks such as assisting students and altering their teaching strategy.
+While Enlearn's visualizations attempted to target these tasks, they did not provide enough information for teachers to quickly determine which students were struggling and what concepts they needed help with. The overwhelming feedback that Enlearn was given by teachers after their trial was that the real-time visualizations need to provide information that is glanceable and immediately actionable. During class, teachers are busy adapting lessons, responding to students, and managing organizational challenges. They do not have time to explore a complex visualization of student data. Instead, they need a simple view that provides them with the exact information they need to accomplish in-class tasks such as assisting students and altering their teaching strategy.
 
 \subsubsection{Design Guidelines}
 From our characterization of the structure of Enlearn's problem-solving data and the tasks that teachers need to accomplish using that data, we developed the following design guidelines for our visualizations:
@@ -188,18 +202,13 @@ With our improved understanding of Enlearn's data structure and teachers' real-t
 
 The raw problem-solving data consists of the problem id, problem timestamp, problem correctness, student id, and concept id. We transformed this data into a nested JSON object that would make it possible to perform the necessary computations and sorting. First, we group problem data by student so that we can calculate how well each student is performing overall. With each student, we further group problem data by concept so that we can determine how well students perform on each concept. To capture information about how students spend their time, we calculate a start and end time for each concept. For each problem, we store problem correctness and the problem timestamp. This nested \emph{data type} allows us to compute the average performance of each student for both individual concepts and the entire lesson.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=55mm]{images/ConceptVisualization.pdf}
-\caption{The concept visualization view. Students are grouped according to the current mathematical concept they are working on.}
-\label{fig:ConceptVisualization}
-\end{figure}
+
 
 \begin{figure*}[t]
 \centering
 \subfigure[]{\label{fig:SummaryVisualization}\includegraphics[width=80mm]{images/SummaryVisualization.pdf}} \hspace{1em}%
 \subfigure[]{\label{fig:SummaryVisualizationClick}\includegraphics[width=80mm]{images/SummaryVisualizationClick.pdf}} \hspace{1em}%
-\caption{Two views of the aggregate visualization. Figure (a) shows the overall aggregate view. Figure (b) shows the view after one of the student progress bars is tapped, bringing it into focus and displaying concept-level information on problem correctness. }
+\caption{Our aggregate visualization of student problem-solving data. Figure (a) shows the main view, with student bars are colored according to their average performance across all problems. Figure (b) shows student-specific concept-level information that is accessed by clicking on a student bar. }
 \label{fig:Spreadsheet}
 \end{figure*}
 
@@ -223,9 +232,16 @@ While the aggregate performance information provides a high-level summary for te
 \begin{figure}[t]
 \centering
 \includegraphics[width=65mm]{images/ColorGradients.pdf}
-\caption{The color gradients used to denote the percentage of problems a student has answered correctly. We include both a red-green scale to match common encodings of correctness, and a red-blue scale for color-blind viewers.}
+\caption{The color scales used to denote the percentage of problems students have answered correctly. We use a red-green scale to match common correctness encodings and a red-blue scale for color-blind users.}
 \label{fig:ColorGradients}
 \end{figure}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=180mm]{images/Timeline.pdf}
+\caption{To show how our visualizations would look with real-time data, we simulate a data stream using this timeline slider. Users can play or brush through the data to view the progression of a single lesson. We display lines on the timeline bar to indicate where problem-solving actions occur.}
+\label{fig:Timeline}
+\end{figure*}
 
 \subsubsection{Visual Design}
 In both visualizations, we display one horizontal bar per student that shows problem-solving information. We chose to use the common encoding of check marks and cross marks to denote problem correctness, and display marks in a neutral gray color that stands out against the bar background. Identifying incorrect responses is most important for teachers for the purpose of real-time intervention, so we color crosses in a darker gray than checks to increase their visual significance.
@@ -235,17 +251,9 @@ We color the background of each student bar based on average problem correctness
 Our visualizations are designed to be used in real-time with streaming data. This means that the displayed data is constantly changing. We use animation in both visualizations to smooth transitions and signify changes. This is particularly important in the concept visualization, since students move dynamically between concepts. We gradually fade student bars in and out when students move between concepts to make these transitions more gradual and visible. %We chose to not use transitions to add new check and cross marks.
 
 \subsection{Implementation}
-In this work, we focused on characterizing the data visualization needs of classroom teachers, developing appropriate data abstractions, and designing visualizations to target teacher needs. Our end goal was not to produce fully functional visualizations that integrate with real-time data streams and run on tablet devices; instead, we wanted to create an environment that Enlearn staff could use to explore and evaluate our designs. We therefore decided to simulate how our visualizations would look on tablet computers with streaming data. This approach will allow us to rapidly iterate on our designs with Enlearn staff before implementing a final production-level product.
+In this work, we focused on characterizing the data visualization needs of classroom teachers, developing appropriate data abstractions, and designing visualizations to target teacher needs. Our end goal was not to produce fully functional visualizations that integrate with real-time data streams and run on tablet devices; instead, we wanted to create an environment that Enlearn staff could use to explore and evaluate our designs. We therefore decided to simulate how our visualizations would look on tablet computers with streaming data. This approach will allow us to rapidly iterate on our designs with Enlearn staff before implementing a final product.
 
 We used the D3 visualization library to create our visualizations. Enlearn's current data visualizations are also implemented with D3, so this approach is compatible with their current workflow. In the following sections, we describe how we simulate the tablet interface and streaming data, and discuss the design of our final system.
-
-%Image dump can go here
-\begin{figure*}[t]
-\centering
-\includegraphics[width=180mm]{images/Timeline.pdf}
-\caption{Since we do not have access to real-time student problem-solving data, we simulate data streaming using this timeline slider. Users can play back and brush through data to reenact the progression of a single lesson.}
-\label{fig:Timeline}
-\end{figure*}
 
 \subsubsection{Tablet Graphic}
 To simulate how our visualizations would appear on a teacher tablet, we display the visualizations within a tablet graphic on our website. The tablet's display area is restricted to the dimensions of the graphic, and users can scroll as they would on an actual device. We display the concept visualization in a vertically positioned tablet and the aggregate view in a horizontally positioned tablet. The concept view is typically longer than it is wide, while the aggregate view is wider than it is tall. We chose these orientations to maximize the amount of visual information. When the user switches between the two visualizations, we rotate the orientation of the tablet graphic. We use animated transitions to reduce any jarring effect of switching between orientations.
@@ -262,7 +270,7 @@ We designed our final website to display all information in a single screen, and
 
 In this work, we have made contributions at multiple levels of Munzner's nested model of visualization design \cite{Munzner09}. We contribute a characterization of the real-time data visualization needs of classroom teachers, describe an appropriate data abstraction designed, and present two new visual encodings of student problem-solving data designed to target teacher needs. Screenshots of our final visualization designs are shown in Figure \ref{fig:Website}.
 
-The primary goal of this work was to present our final visualization designs in an environment that would allow Enlearn staff and teachers to explore and evaluate the designs before implementing production-level versions of the visualizations for use in the classroom. While we have not formally evaluated our visualization designs yet, we collected informal feedback both from Enlearn staff and from attendees of the CSE 512 poster sessions. Overall feedback has been positive; Enlearn staff expressed excitement about the potential of these new visual encodings, and poster session attendees liked the visual designs and expressed an interest in the problem space.
+The primary goal of this work was to present our final visualization designs in an environment that would allow Enlearn staff and teachers to explore and evaluate the designs before implementing production-level versions of the visualizations for use in the classroom. While we have not formally evaluated our visualization designs yet, we collected informal feedback both from Enlearn staff and from attendees of the CSE 512 poster session. Overall feedback has been positive; Enlearn staff expressed excitement about the potential of these new visual encodings, and poster session attendees liked the visual designs and expressed an interest in the problem space.
 
 While feedback was generally positive, we received a number of suggestions for improvements and revisions to our designs. Both Enlearn staff and poster session attendees questioned the utility of the aggregate visualization. At the poster session, a number of people suggested that we remove the problem-level checks and crosses, and instead display a grid of colors showing how each student performed on each concept. This would allow teachers to view overall student understanding at the concept level. Interestingly, Enlearn staff gave opposing feedback. The suggested that we color student bars based on recent progress rather than progress across multiple concepts. They reiterated the fact that the primary goal of teachers during class is to rapidly determine which student needs help \emph{right now}, and that they are not interested in viewing summary information during class time. This tension highlights the need for separate visualization designs to target in-class and after-class tasks.
 
@@ -283,8 +291,8 @@ Many of these design questions must be further explored by evaluating the visual
 %Image dump can go here
 \begin{figure}[t]
 \centering
-\includegraphics[width=65mm]{images/results1.pdf}
-\caption{Our final visualization, shown displaying the summary view.}
+\includegraphics[width=88mm]{images/results2.pdf}
+\caption{Our final website, shown displaying the concept visualization.}
 \label{fig:Website}
 \end{figure}
 
@@ -346,7 +354,7 @@ Our work makes multiple contributions to the field of student data visualization
 % REFERENCES FORMAT
 % References must be the same font size as other body text.
 \bibliographystyle{SIGCHI-Reference-Format}
-\small
+
 \bibliography{references}
 
 \end{document}
