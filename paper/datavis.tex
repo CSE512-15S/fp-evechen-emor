@@ -151,38 +151,74 @@ From our characterization of the structure of Enlearn's problem-solving data and
 We use these guidelines throughout the remainder of our work focus our data abstraction and visual encoding designs.
 
 
+
 \subsection{Data Abstractions}
 With our improved understanding of Enlearn's data structure and teacher's real-time visualization needs, we developed a set of data abstractions. First, we identify the set of low-level data \emph{operations} that need to be performed using the taxonomy developed by Amar, Eagan, and Stasko \cite{Amar05}. To assess student performance and determine which students are struggling, teachers must \emph{compute derived values} of student performance across multiple problems or concepts. To determine which concepts students are struggling with, teachers must also \emph{sort} students by concept. And finally, to be able to quickly find individual students, teachers must \emph{sort} data alphabetically. Since teachers do not have time to perform these operations manually during class, our visualizations need to compute averages and sort students automatically.
 
 The raw problem-solving data consists of the problem id, problem timestamp, problem correctness, student id, and concept id. We transformed this data into a nested JSON object that would make it possible to perform the necessary computation and sorting. First, we group problem data by student so that we can calculate how well each student is performing overall. With each student, we further group problem data by concept so that we can determine how well students perform on each concept. To capture information about how students spend their time, we calculate a start and end time for each concept. For each problem, we store problem correctness and the problem timestamp. This nested \emph{data type} allows us to compute the average performance of each student for both individual concepts and the entire lesson.
 
 
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=55mm]{images/ConceptVisualization.pdf}
+\caption{Caption here}
+\label{fig:ConceptVisualization}
+\end{figure}
+
+\begin{figure*}[t]
+\centering
+\subfigure[]{\label{fig:SummaryVisualization}\includegraphics[width=80mm]{images/SummaryVisualization.pdf}} \hspace{1em}%
+\subfigure[]{\label{fig:SummaryVisualizationClick}\includegraphics[width=80mm]{images/SummaryVisualizationClick.pdf}} \hspace{1em}%
+\caption{
+Screenshots of the Teacher and Student software. Figure (a) shows the teacher lesson view. Figure (b) shows a prompt for the teacher to ``Start Exercise 1'' on all student tablets. Figure (c) shows the teacher Dashboard that displays student problem-solving progress. Figure (d) shows the student problem-solving interface, with a calculator input interface at the bottom of the screen and badges at the top that indicate problem correctness. }
+\label{fig:Spreadsheet}
+\end{figure*}
+
+
+
 \subsection{Visual Encodings}
+To support the tasks that teachers want to accomplish using student problem-solving data during class time, we developed two separate visual encodings. We describe the goals and structure of each visual encoding below, and then discuss our visual design choices in detail.
+
+\subsubsection{Concept Visualization}
+We designed the concept visualization to help teachers determine which students need individual assistance in the present moment. In this visualization, students are sorted first by concept and then alphabetically. For each student, we display a bar showing problem-solving information for the concept that the student is currently working on. The bar shows check marks for correct problems and cross marks for incorrect problems, indicating both the number of problems a student has completed for this concept and problem correctness. The bar is colored according to the student's average performance on the concept. A screenshot of the concept visualization can be seen in Figure \ref{fig:ConceptVisualization}.
+
+The goal of this visual encoding is to allow teachers to rapidly identify students who are struggling. One issue with the visualizations that Enlearn tested was that it was difficult for teachers to determine which specific concepts were currently struggling with. By grouping students by concept, we expose this concept-level information and make it possible for teachers to provide targeted assistance. Furthermore, this encoding makes it straightforward for teachers to determine if multiple students are struggling with the same concept. Teachers may choose to work with these students in small groups or re-teach the concept to the entire class based on this concept-level performance information.
+
+\subsubsection{Summary Visualization}
+We designed the summary visualization to give teachers a high-level overview of how students are performing during the current lesson. In this visualization, students are sorted alphabetically. For each student, we display a bar showing all of the student's problem-solving information for the current class period. Again, the bar shows check and cross marks to indicate problem correctness. We leave a blank space between the marks for separate concepts to visually separate them. The bar is colored according to the student's average performance during this class period. A screenshot of the summary visualization can be seen in Figure \ref{fig:SummaryVisualization}.
+
+The goal of this visual encoding is to allow teachers to assess student's overall performance during the current lesson. In Enlearn's initial studies, teachers found the table summary visualization most useful, so we wanted to create something similar. With this encoding, we make it possible for teachers to identify students who are performing poorly or who have completed fewer problems. If students are performing poorly across the board, teachers may decide to stop problem solving and re-teach lesson content. 
+
+While the aggregate performance information provides a high-level summary for teachers, we also wanted to make concept-level information accessible through the summary visualization. We added an interactive feature to this visualization, allowing the teacher to access concept-level information for a given student by clicking on the student's bar, as shown in Figure \ref{fig:SummaryVisualizationClick}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=65mm]{images/ColorGradients.pdf}
+\caption{Caption here}
+\label{fig:ColorGradients}
+\end{figure}
+
+\subsubsection{Visual Design}
+In both visualizations, we display one horizontal bar per student that shows problem-solving information. We chose to use common encoding of check marks and cross marks to denote problem correctness, and display marks in a neutral gray color that stands out against the bar background. Identifying incorrect responses is most important for teachers for the purpose of real-time intervention, so we color crosses in a darker gray than checks to increase their visual significance.
+
+We color the background of each student bar based on average problem correctness. By default we use a seven-step gradient of colors that ranges from a red to a  green with yellow as the midpoint. We chose this encoding because red and green are commonly used to denote correctness in educational settings. While this encoding is the most natural for teachers, it is not an appropriate gradient for color blind users. To provide support for color blind teachers, we include an option for switching to an orange-blue color gradient if desired. Our color gradients are shown in Figure \ref{fig:ColorGradients}. We selected our these colors using ColorBrewer \cite{ColorBrewer}, an application designed to provide a range of easily differentiable color schemes.
+
+Our visualizations are designed to be used in real-time with streaming data. This means that the displayed data is constantly changing. We use animation in both visualizations to smooth transitions and signify changes. This is particularly important in the concept visualization, since students move dynamically between concepts. We gradually fade student bars in and out when students move between concepts to make these transitions more gradual and visible. %We chose to not use transitions to add new check and cross marks.
 
 
 
+\subsection{Implementation}
+Enlearn's current visualizations are created using the D3.js visualization library. Hence, we also use D3.js, not only to be compatible within Enlearn's existing workflow, but also to prepare a foundation for a future web-based tool so that teachers will not be dependent on the Enlearn tablet software and can view student data from any computer.
 
 
 \subsubsection{Simulating Real-Time Data}
 Our visualizations are designed to display real-time student data; however, we do not have a constant stream of data to display. To simulate real-time problem solving, we use data collected from students last fall. We display a timeline that can be played and brushed, allowing both us and Enlearn staff to quickly see what the visualizations would look like in various real-time scenarios. 
 
-\subsubsection{Concept View}
-The concept visualization is designed to help teachers determine which students need help in the present moment. Students are grouped by the concept that they are currently working on so that it is easy for the teacher to know what concept to target. The background color of each student bar indicates how well the student is performing on that concept. This view gives teachers a glanceable display that can help them rapidly determine which student to assist.
-
-\subsubsection{Aggregated View}
-The aggregate visualization is designed to give teachers a high-level overview of how each student has performed over the course of the lesson. This view displays all problem-solving information for each student across multiple concepts. The background is colored to show the student's aggregate performance.  If the teacher wants to see concept-level information for a given student, she can click on that student to see the individual visualization shown to the right above.
-
 \subsubsection{Visualization Options}
 
 {\bf Tablet Graphic}\\
 We added a tablet graphic as a mockup for intended use of our visualization. The tablet's display area is restricted, but users can scroll within the tablet screen to navigate. To prevent confusion with multiple sets of scrollbars, we designed our visualization to fit on a 13" MacBook Pro screen. The horizontal view and aggregate views are shown in a vertical and horizontal tablet layout, respectively. The concept view tends to grow vertically faster than in grows horizontally, since it only displays problem information for the student's current concept, whereas the aggregate view tends to grow horizontally much faster than it grows vertically, because there is a fixed number of rows based on the number of students in the class.
-
-{\bf Correctness Glyphs}\\
-Enlearn's initial visualization used green and red filled circles to show the correctness of a single problem. However, these color choices conflict with red and green backgrounds used to denote student progress. We instead choose the common encodings of checks and crosses in a neutral gray. For the purposes of real-time
-intervention, student problem incorrectness is more useful to a teacher than problem correctness, so we color crosses slightly darker than checks to increase their visual significance.
-
-{\bf Correctness Colors}\\
-The default 7-step gradient of colors to represent student problem correctness ranges from a muted orange to a muted green, with yellow as the midpoint - these colors were selected from ColorBrewer2.org, a site created to help designers select easily differentiable color schemes. We chose an orange-green spectrum because red and green are very common encodings for correctness in the educational field - however, we do realize that some users of our tool may be color-blind, so we also include an option to switch to an orange-blue color gradient.
 
 {\bf Button Layout}\\
 To provide context to our visualization, the right side of our visualization contains information on the currently selected view, as well as the buttons for various interaction options: switching the view, switching the class session, and switching colors. These buttons are displayed inline with brief descriptions of their purpose.
@@ -190,15 +226,13 @@ To provide context to our visualization, the right side of our visualization con
 {\bf Timeline}\\
 We display lines on the timeline where problem-solving actions occurred. These visual information scent cues \cite{Willet07} help to familiarize the viewer with the data set. While we designed this feature for our benefit as designers, it may be valuable when used by teachers to play back their lessons.
 
-{\bf Animation}\\
-We use animation to signify changes. When the user clicks the button to switch views, the tablet and information box about the current view fade out, and then the new view fades in. In the concept view, student movement to a new concept is shown by a fade out-fade in transition, leaving a small gap amongst the students in their previous concept to highlight the student's prior location. To prevent viewers from becoming overwhelmed by too much visual movement, check and cross marks that signify problem correctness simply pop into existence.
-
 {\bf Data Choices}\\
 Our system provides a selection of 5 datasets that the user can switch between freely. The datasets all come from classes taught by a single teacher in a South Seattle school. We envision a teacher using our tool to replay and compare the progress of different class periods, or the same class period over different lessons. 
 
-\subsection{Implementation}
-Enlearn's current visualizations are created using the D3.js visualization library. Hence, we also use D3.js, not only to be compatible within Enlearn's existing workflow, but also to prepare a foundation for a future web-based tool so that teachers will not be dependent on the Enlearn tablet software and can view student data from any computer.
 
+
+{\bf Animation}\\
+We use animation to signify changes. When the user clicks the button to switch views, the tablet and information box about the current view fade out, and then the new view fades in. In the concept view, student movement to a new concept is shown by a fade out-fade in transition, leaving a small gap amongst the students in their previous concept to highlight the student's prior location. To prevent viewers from becoming overwhelmed by too much visual movement, check and cross marks that signify problem correctness simply pop into existence.
 
 \section{Results \& Discussion}
 %The visualizations your system produces and data to help evaluate your approach. For example you may include running times, or the time users typically spend generating a visualization using your system.
