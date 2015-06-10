@@ -12,10 +12,10 @@ In this work, we explore the design of visualizations for communicating student 
 
 For more information about this project, check out the following resources:
 
-[Visualization] (http://cse512-15s.github.io/fp-evechen-emor/code/visualization.html)
-[Project Page] (http://cse512-15s.github.io/fp-evechen-emor/)
-[Poster] (http://cse512-15s.github.io/fp-evechen-emor/final/poster.pdf)
-[Paper] (http://cse512-15s.github.io/fp-evechen-emor/final/paper.pdf)
+[Visualization] (http://cse512-15s.github.io/fp-evechen-emor/code/visualization.html)  
+[Project Page] (http://cse512-15s.github.io/fp-evechen-emor/)  
+[Poster] (http://cse512-15s.github.io/fp-evechen-emor/final/poster.pdf)  
+[Paper] (http://cse512-15s.github.io/fp-evechen-emor/final/paper.pdf)  
 
 
 
