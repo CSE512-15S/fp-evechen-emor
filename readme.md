@@ -16,8 +16,11 @@ Our visualization simulates a tool that enables teachers to monitor real time pr
 ## Development Process
 
 Enlearn's software contains two pre-existing visualizations, which were evaluated in a one-week trial this spring. 
+
 We first met with Enlearn staff to discuss feedback they had gathered from teachers about their visualizations. 
+
 We then created some designs that would address teacher concerns and needs. During this process, we realized that a time invariant visualization would not demonstrate the full capabilities of our tool. We pulled student problem-solving data from Enlearn databases and used a playback slider encoding to simulate data streaming. 
+
 Our design ideas led to two main visualizations in our tool. During the coding process, we realized that they required different data configurations, so we had to transform our data to fit these scenarios.
 
 
