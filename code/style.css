@@ -1,0 +1,230 @@
+/*Timeline Slider*/
+.axis {
+  font: 10px sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.x line {
+	stroke: #ddd;
+}
+	
+.axis .halo {
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 8px;
+  stroke-linecap: round;
+}
+
+.activity_bar {
+  fill: none;
+  stroke-width: 0px;
+}
+
+ .activity .tick {
+  stroke: #999999;
+ }
+ .activity path {
+	stroke-width: 0;
+ }
+
+.slider .handle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: .5;
+  stroke-width: 1.25px;
+  cursor: crosshair;
+}
+ 
+/*Concept Tree*/
+.border {
+	fill: none;
+	shape-rendering: crispEdges;
+	stroke: #aaa;
+}
+
+.nodeVisual {
+	fill: none;
+}
+
+.conceptTitle{
+	font-weight: bold;
+}
+
+.visualizationTitle {
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.student_name, .marker, .info_overlay{
+  pointer-events:none
+}
+
+.student_bg {
+	stroke-width: 1px;
+	stroke: #888;
+}
+
+.marker{
+	stroke-linecap: null;
+	stroke-linejoin: null
+	stroke-width: 2;
+	stroke: #333;		   
+}
+
+.correct.marker{
+	stroke-width: 0;
+	fill: #777777;
+}
+
+.incorrect.marker{
+	stroke-width: 3;   
+	fill: #333;
+}
+
+
+.overlay{
+	fill: gray;
+	opacity: 0.2;
+}
+
+rect.info_overlay {
+	stroke-width: 1;
+	stroke: black;
+}
+
+.concept_name {
+	font-weight: bold;
+}
+
+text{
+	font-family: Verdana, Sans-Serif;
+	-webkit-user-select: none;
+}
+
+text.sliderAxisLabel{
+	font-size : 12px;
+	fill: #777;
+}
+
+#play{
+ left: 20px;
+ top: 49px;
+ position: absolute;
+ background: #004276;
+ padding-right: 26px;
+ border-radius: 2px;
+ border: none;
+ color: white;
+ margin: 0;
+ padding: 0 12px;
+ width: 60px;
+ cursor: pointer;
+ height: 20px;
+ font: 13px sans-serif;
+}
+
+#g-play-button:hover {
+ background-color: #064d84;
+}
+
+#g-play-button:active {
+ background-color: #002657;
+}
+
+#switchViewsButton {
+	 position:relative;
+	 left:110px;
+	 background: #004276;
+	 padding-right: 26px;
+	 border-radius: 2px;
+	 border: none;
+	 color: white;
+	 margin: 0;
+	 padding: 0 12px;
+	 width: 130px;
+	 cursor: pointer;
+	 height: 20px;
+	 font: 13px sans-serif;
+}
+
+#switchSessionsSelector {
+	position:relative;
+	left:110px;
+	background: #004276;
+	 padding-right: 26px;
+	 border-radius: 2px;
+	 border: none;
+	 color: white;
+	 margin: 0;
+	 padding: 0 12px;
+	 width: 130px;
+	 cursor: pointer;
+	 height: 20px;
+	 font: 13px sans-serif;				
+}
+
+#colorModeButton {
+	position:relative;
+	 left:110px;
+	 background: #004276;
+	 padding-right: 26px;
+	 border-radius: 2px;
+	 border: none;
+	 color: white;
+	 margin: 0;
+	 padding: 0 12px;
+	 width: 130px;
+	 cursor: pointer;
+	 height: 20px;
+	 font: 13px sans-serif;
+}
+
+.verticalContainer{
+	position: absolute;
+	overflow: scroll;
+	left: 244px;
+	top: 161px;
+	color: "blue";
+	background-color: "blue";
+	width: 313px;
+	height: 452px;
+}
+
+.horizontalContainer{
+	position: absolute;
+	overflow: scroll;
+	left: 183px;
+	top: 183px;
+	color: "blue";
+	background-color: "blue";
+	height: 314px;
+	width: 448px;
+}
+
+.title{
+	font-size: 20px;
+	position: absolute:
+}
+
+div{
+	font-family: Verdana, Sans-Serif;
+}
+.infobox{
+	font-size: 12px;
+	position: absolute;
+	left: 800px;
+	top: 25px;
+	width: 350px;
+	text-align: justify;
+}
+.infobox_bottom {
+	font-size: 12px;
+	position: absolute;
+	left: 800px;
+	top: 370px;
+	width: 350px;
+	height: 100px;
+	text-align: justify;
+}
